@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이민 가이드북</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;800&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE work: a decision atlas you answer questions to, calm and dense like a survey sheet
+   IDEA a printed survey map sheet: sea-blue fields, land-white margins, brown contours for what is ruled out, magenta route for the chosen path
+   PICTURE the question card itself at the top, then a safety x opportunity chart of 100 countries; every country carries its own age pyramid
+   COLOUR land #fbfbf2 ground, sea #bfe3ee, ink #13242e, contour brown #a8551b, route magenta #d6127e; night #0d1c24
+   TYPE Overpass 800 for figures and Latin, IBM Plex Sans KR for Hangul
+   LAYOUT laptop: title, then question card left with live ranking right; phone: title, card, ranking stacked */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#0b1720);--hero:light-dark(#142430,#070f15);--soft:light-dark(#f4f6f8,#132733);--sea:light-dark(#96d8f0,#0e3a4d);--sea2:light-dark(#c4ecfb,#0c2e3d);
+--ink:light-dark(#0f2330,#eaf3f6);--mute:light-dark(#46606c,#a3bcc6);--rule:light-dark(#0f233026,#eaf3f626);
+--brown:light-dark(#c25810,#ff9a4d);--route:light-dark(#e8007f,#ff4fae);--panel:light-dark(#ffffff,#0f2a37);--chip:light-dark(#edf1f4,#1a3240);
+--young:light-dark(#ffa400,#ffbd2e);--mid:light-dark(#0a6fd6,#4fb0ff);--old:light-dark(#e3115f,#ff5c93);--risk:light-dark(#ec4a12,#ff7a45);--t1:light-dark(#ffc730,#ffd34d);--t2:light-dark(#ff8417,#ff9a3d);--t3:light-dark(#b8240b,#ff5a3a);--tnull:light-dark(#a3b3ba,#5a6f78);--good:light-dark(#0a6fd6,#4fb0ff)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 'Overpass','IBM Plex Sans KR',system-ui,sans-serif;overflow-x:clip;word-break:keep-all}
+h1,h2,h3,h4{font-family:'Overpass','IBM Plex Sans KR',sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.12;margin:0}
+h1{font-size:clamp(40px,6vw,64px);line-height:1.02}
+h2{font-size:clamp(24px,3vw,34px);text-wrap:balance}
+h3{font-size:20px}
+h4{font-size:17px;margin:22px 0 8px}
+p{margin:0 0 12px}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto}
+.band{padding:clamp(28px,4vw,56px) max(5vw,16px)}
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--rule);padding:10px max(5vw,16px)}
+.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:6px 22px}
+.brand{font-weight:800;font-size:17px;margin-right:auto;text-decoration:none}
+.brand span,.acc{color:var(--route)}
+.nav{display:flex;flex-wrap:wrap;gap:2px 18px;font-size:15px}
+.nav a{text-decoration:none;padding:8px 0;color:var(--mute)}
+.nav a:hover{color:var(--ink)}
+.lede{color:var(--mute);font-size:17px;max-width:46em;margin-top:12px}
+.sea{background:var(--sea)}
+.start{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;margin-top:24px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--rule);padding:22px}
+.prog{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--mute)}
+.bar{flex:1;height:6px;background:var(--chip)}
+.bar i{display:block;height:100%;background:var(--route);transition:width .3s}
+.q{font-size:clamp(24px,3vw,32px);margin:18px 0 6px;text-wrap:balance}
+.help{color:var(--mute);font-size:15px;margin:0 0 16px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:14px;align-items:center;text-align:left;font:inherit;font-size:17px;background:var(--soft);color:var(--ink);border:1px solid var(--rule);min-height:56px;padding:10px 16px;cursor:pointer}
+.opt:hover{border-color:var(--ink)}
+.opt kbd{font:600 13px 'Overpass',sans-serif;border:1px solid var(--rule);min-width:26px;height:26px;display:grid;place-items:center;color:var(--mute);flex:none}
+.opt[aria-pressed=true]{border:2px solid var(--route);padding:9px 15px;background:color-mix(in srgb,var(--route) 7%,var(--bg))}
+.opt[aria-pressed=true] kbd{background:var(--route);color:#fff;border-color:var(--route)}
+.own{margin-top:16px}
+.own label{font-size:14px;font-weight:600;display:block;margin-bottom:6px}
+.own textarea{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);min-height:64px;resize:vertical}
+.obnav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+.btn{font:inherit;font-weight:700;font-size:16px;min-height:48px;padding:0 20px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.pri{background:var(--route);border-color:var(--route);color:#fff;margin-left:auto}
+.btn:disabled{opacity:.4;cursor:default}
+.ghost{font:inherit;font-size:14px;background:none;border:0;color:var(--mute);text-decoration:underline;cursor:pointer;padding:10px 0;min-height:44px}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,tr:focus-visible,th:focus-visible{outline:3px solid var(--route);outline-offset:2px}
+.sum{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.sum span{font-size:13px;background:var(--chip);padding:3px 9px}
+.sum span.ex{color:var(--brown)}
+.board{display:grid;gap:4px}
+.brow{display:grid;grid-template-columns:22px minmax(0,7em) minmax(0,1fr) 2.6em;gap:10px;align-items:center;font-size:15px;cursor:pointer;background:none;border:0;color:inherit;font-family:inherit;text-align:left;padding:2px 0;min-height:32px}
+.brow i{display:block;height:12px;background:var(--ink);transition:width .35s}
+.brow.first i{background:var(--route)}
+.brow b{text-align:right;font-variant-numeric:tabular-nums}
+.brow .rk{color:var(--mute);font-size:13px;text-align:right}
+.verdict{border-top:6px solid var(--route);padding-top:16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 20px;align-items:end}
+.verdict .kick{grid-column:1/-1;color:var(--route);font-weight:600;margin:0}
+.verdict h3{font-size:clamp(34px,5vw,52px);line-height:1.05}
+.verdict .score{font-size:clamp(34px,5vw,52px);font-weight:800;line-height:1;white-space:nowrap}
+.verdict .score small{font-size:16px;color:var(--mute);font-weight:600}
+.verdict .sub{grid-column:1/-1;color:var(--mute);margin:0}
+.vrow{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:20px;align-items:start}
+.why p{max-width:44em}
+table{border-collapse:collapse;width:100%}
+th,td{padding:9px 8px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+th{font-size:13px;font-weight:600;color:var(--mute);white-space:nowrap}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mbar{height:8px;background:var(--chip);width:100%;margin-top:7px}
+.mbar i{display:block;height:100%;background:var(--ink)}
+.scroll{overflow-x:auto}
+.list{margin:0;padding-left:20px}
+.list li{margin:4px 0}
+.outs{display:grid;gap:8px}
+.out{display:grid;grid-template-columns:minmax(0,9em) 3em minmax(0,1fr);gap:10px;font-size:15px;border-top:1px solid var(--rule);padding-top:8px}
+.out .num{font-weight:800}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid var(--rule)}
+.steps li::before{content:counter(s);font-weight:800;color:var(--route);font-size:20px;line-height:1.2}
+.note{background:var(--soft);padding:14px 16px;font-size:15px;margin-top:18px}
+details.tune{margin-top:14px;border-top:1px solid var(--rule)}
+details.tune summary{cursor:pointer;font-weight:700;padding:12px 0;min-height:44px}
+.rule{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--rule);cursor:pointer;font-size:15px}
+.rule input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--route);flex:none}
+.wt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--rule);font-size:15px}
+.lv{display:flex;border:1px solid var(--rule)}
+.lv button{font:inherit;font-size:13px;border:0;border-left:1px solid var(--rule);background:transparent;color:var(--mute);min-width:44px;min-height:36px;cursor:pointer}
+.lv button:first-child{border-left:0}
+.lv button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--ink);margin-top:6px}
+.seg button{font:inherit;font-weight:600;border:0;background:transparent;color:var(--ink);min-height:44px;cursor:pointer;padding:6px}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 280px;margin-top:22px;border:1px solid var(--rule)}
+.fig{position:relative;min-height:540px;background:var(--sea)}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.fig svg text{font:13px 'Overpass','IBM Plex Sans KR',sans-serif;fill:var(--ink);paint-order:stroke;stroke:var(--sea);stroke-width:4px;stroke-linejoin:round}
+.dot{cursor:pointer}
+.axes{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;margin-top:18px}
+.axes label{display:flex;gap:8px;align-items:center;font-size:15px;font-weight:600}
+.axes select{font:inherit;font-size:16px;min-height:44px;padding:6px 10px;border:1px solid var(--rule);background:var(--panel);color:var(--ink)}
+.sw.t1{background:var(--t1)}.sw.t2{background:var(--t2)}.sw.t3{background:var(--t3)}.sw.tn{background:var(--tnull)}
+.sw.pk{border:3px solid var(--route);background:transparent}
+.sw.fd{background:var(--t2);opacity:.3;outline:1.5px dashed var(--brown);outline-offset:1px}
+.taxtag{font-size:12px;color:var(--route);font-weight:600;margin-left:4px;white-space:nowrap}
+.tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--rule);padding:8px 10px;font-size:14px;line-height:1.4;max-width:240px;box-shadow:0 6px 18px #0002;display:none;z-index:3}
+.legend{background:var(--panel);padding:22px;border-left:1px solid var(--rule);display:flex;flex-direction:column;gap:16px}
+.legend h3{font-size:16px}
+.kf{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline}
+.kf b{font-size:30px;font-weight:800;line-height:1;text-align:right;font-variant-numeric:tabular-nums}
+.kf span{font-size:14px;color:var(--mute)}
+.key{display:grid;gap:8px;font-size:14px}
+.key div{display:flex;gap:10px;align-items:center}
+.sw{width:14px;height:14px;border-radius:50%;flex:none}
+.sw.pass{background:var(--ink)}.sw.fail{border:2px dashed var(--brown)}.sw.pick{background:var(--route)}.sw.base{border:2px solid var(--ink);background:var(--bg)}
+.small{font-size:13px;color:var(--mute)}
+.tools{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin:20px 0 14px}
+.tools input[type=search]{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);min-height:44px;width:min(260px,100%)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:inherit;font-size:14px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);min-height:40px;padding:6px 12px;cursor:pointer}
+.chips button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chk{display:flex;gap:8px;align-items:center;font-size:15px;cursor:pointer;min-height:44px}
+.chk input{width:20px;height:20px;accent-color:var(--route)}
+#tbl{min-width:1180px;font-size:14px}
+#tbl th{cursor:pointer;user-select:none}
+#tbl th[aria-sort]{color:var(--ink)}
+#tbl tbody tr{cursor:pointer}
+#tbl tbody tr:hover{background:var(--chip)}
+#tbl tr.off td{color:var(--mute)}
+.nm{font-weight:700;white-space:nowrap}
+.tag{display:inline-block;font-size:12px;color:var(--brown);border:1px solid currentColor;padding:0 6px;margin-left:6px;white-space:nowrap;font-weight:500}
+.tag.base{color:var(--mute)}
+.pcell{display:flex;gap:10px;align-items:center}
+.pcell span{font-size:13px;line-height:1.3}
+svg.pm{flex:none;display:block}
+.pm .y{fill:var(--young)}.pm .m{fill:var(--mid)}.pm .e{fill:var(--old)}
+.mt{display:inline-block;width:60px;height:8px;border-radius:999px;background:var(--chip);overflow:hidden;vertical-align:middle}
+.mt i{display:block;height:100%;border-radius:999px}
+.keys{display:flex;flex-wrap:wrap;gap:10px 28px;align-items:center;margin-bottom:10px;font-size:14px}
+.keys>span{display:inline-flex;gap:8px;align-items:center}
+.keys b{font-weight:600}
+.keys small{color:var(--mute);font-size:13px}
+.sw3{display:inline-block;width:14px;height:14px;border-radius:2px}
+.pm text{font:11px 'Overpass','IBM Plex Sans KR',sans-serif;fill:var(--mute)}
+.pkey{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--mute)}
+.pkey i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px}
+.dots{letter-spacing:1px;white-space:nowrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:16px;margin-top:18px}
+.card{background:var(--panel);border:1px solid var(--rule);padding:18px;display:flex;flex-direction:column;gap:10px}
+.card h3 small{font-size:13px;color:var(--mute);font-weight:500;margin-left:6px}
+.chead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.meta span{font-size:13px;background:var(--chip);padding:2px 8px}
+.card p{font-size:15px;margin:0}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px}
+.pc ul{margin:4px 0 0;padding-left:16px}
+.pc b{font-size:13px}
+.card .more{margin-top:auto;font:inherit;font-size:14px;font-weight:600;background:none;border:1px solid var(--ink);color:var(--ink);min-height:44px;cursor:pointer}
+dialog{border:0;padding:0;background:var(--bg);color:var(--ink);width:min(900px,100vw - 24px);max-height:calc(100dvh - 24px)}
+dialog::backdrop{background:#0d1c24b3}
+.dh{position:sticky;top:0;background:var(--soft);padding:18px 20px;display:flex;gap:14px;align-items:flex-start;z-index:2}
+.dh h2{flex:1}
+.dh h2 small{display:block;font-size:15px;color:var(--mute);font-weight:500;margin-top:6px;letter-spacing:0}
+.x{font:inherit;font-size:15px;font-weight:600;background:var(--ink);color:var(--bg);border:0;min-width:44px;min-height:44px;padding:0 14px;cursor:pointer}
+.db{padding:6px 20px 24px}
+.cats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px}
+.cat{border-top:1px solid var(--rule);padding:12px 0}
+.cat h4{margin:0 0 6px;font-size:15px;color:var(--brown)}
+.cat p{font-size:15px;margin:0 0 4px}
+.kv{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:2px 10px;font-size:15px}
+.kv dt{color:var(--mute)}.kv dd{margin:0}
+.chkl{list-style:none;padding:0;margin:0;font-size:15px}
+.chkl li{padding:3px 0}
+.chkl .y::before{content:'통과 ';font-weight:700}
+.chkl .n{color:var(--brown)}
+.chkl .n::before{content:'탈락 ';font-weight:700}
+.bigpyr{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:20px;align-items:center}
+.bigpyr dd{white-space:nowrap}
+.src{columns:2 320px;column-gap:32px;font-size:15px;padding-left:18px}
+.src li{margin:0 0 8px;break-inside:avoid}
+footer{border-top:1px solid var(--rule);font-size:14px;color:var(--mute)}
+[hidden]{display:none!important}
+@media(max-width:900px){.start{grid-template-columns:minmax(0,1fr)}.hero{grid-template-columns:minmax(0,1fr)}.legend{border-left:0;border-top:1px solid var(--rule);display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}}
+@media(max-width:600px){.fig{min-height:420px}.cats{grid-template-columns:minmax(0,1fr)}.pc{grid-template-columns:minmax(0,1fr)}.out{grid-template-columns:minmax(0,1fr) 3em}.out span:last-child{grid-column:1/-1}.verdict{grid-template-columns:minmax(0,1fr)}.vrow{grid-template-columns:minmax(0,1fr)}.bigpyr{grid-template-columns:minmax(0,1fr)}.nav{gap:0 14px;font-size:14px}.panel{padding:16px}.opt{font-size:16px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar i,.brow i{transition:none}}
+
+/* softer survey-map finish */
+.panel{border-radius:24px;border-color:transparent;box-shadow:0 1px 0 var(--rule),0 10px 30px -18px #13242e55}
+.btn,.go,.chips button,.seg,.lv,.x,.card .more{border-radius:999px}
+.seg button:first-child{border-radius:999px 0 0 999px}.seg button:last-child{border-radius:0 999px 999px 0}
+.lv button:first-child{border-radius:999px 0 0 999px}.lv button:last-child{border-radius:0 999px 999px 0}
+.opt{border-radius:18px;transition:transform .15s,border-color .15s,background .15s}
+.opt:active{transform:scale(.985)}
+.opt kbd{border-radius:50%}
+.opt[aria-pressed=true]::after{content:'';margin-left:auto;width:22px;height:22px;flex:none;border-radius:50%;background:var(--route) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+.own textarea,.tools input[type=search],.axes select{border-radius:14px}
+.sum span{border-radius:999px;padding:4px 11px}
+.meta span{border-radius:999px}
+.note{border-radius:16px}
+.tag{border-radius:999px;padding:0 8px}
+.wave{line-height:0;margin-top:-1px}
+.wave svg{display:block;width:100%;height:clamp(34px,5vw,70px)}
+.wave.up svg{transform:scaleY(-1)}
+#start{position:relative;overflow:clip;padding-bottom:clamp(20px,3vw,36px)}
+#start>.wrap{position:relative;z-index:1}
+.topo{position:absolute;right:-120px;top:-60px;width:min(760px,90vw);height:auto;color:var(--ink);opacity:.06;pointer-events:none;z-index:0}
+.route{display:flex;align-items:center;flex:1;gap:0;position:relative;height:22px}
+.route::before{content:'';position:absolute;left:6px;right:6px;top:50%;border-top:2px dashed var(--rule)}
+.route i{position:relative;flex:1;display:flex;justify-content:center}
+.route i::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--chip);border:2px solid var(--panel);transition:all .25s}
+.route i.done::after{background:var(--route);opacity:.45}
+.route i.now::after{width:16px;height:16px;background:var(--route);box-shadow:0 0 0 4px color-mix(in srgb,var(--route) 22%,transparent)}
+.qwrap.swap{animation:slide .32s ease-out}
+@keyframes slide{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+.hero{border:0;gap:16px;align-items:stretch}
+.fig{border-radius:0;overflow:hidden;box-shadow:inset 0 0 0 1px var(--rule)}
+.legend{border:0;border-radius:24px;background:var(--panel);box-shadow:0 10px 30px -20px #13242e55}
+.scroll.tblwrap{background:var(--panel);border-radius:24px;padding:4px 12px;box-shadow:0 10px 30px -22px #13242e55}
+#tbl tbody tr:last-child td{border-bottom:0}
+#tbl tbody tr:hover{background:var(--chip)}
+.card{border-radius:24px;border-color:transparent;box-shadow:0 10px 28px -20px #13242e66;position:relative;margin-top:14px}
+.card .pbadge{width:96px;height:96px;border-radius:50%;background:var(--sea2);display:grid;place-items:center;margin:-34px -6px 0 0;box-shadow:0 0 0 5px var(--panel)}
+.cards{row-gap:24px}
+dialog{border-radius:26px}
+.dh{border-radius:26px 26px 0 0}
+.ticket{display:grid;grid-template-columns:minmax(0,1fr) 150px;border-radius:22px;background:color-mix(in srgb,var(--route) 9%,var(--panel));position:relative;overflow:hidden}
+.ticket .tl{padding:20px 22px}
+.ticket .tr{border-left:2px dashed color-mix(in srgb,var(--route) 45%,transparent);display:grid;place-items:center;align-content:center;padding:16px;text-align:center;position:relative}
+.ticket .tr::before,.ticket .tr::after{content:'';position:absolute;left:-13px;width:24px;height:24px;border-radius:50%;background:var(--panel)}
+.ticket .tr::before{top:-12px}.ticket .tr::after{bottom:-12px}
+.ticket .kick{color:var(--route);font-weight:700;margin:0 0 6px;font-size:14px}
+.ticket h3{font-size:clamp(36px,5vw,54px);line-height:1.02}
+.ticket .sub{color:var(--mute);margin:8px 0 0;font-size:15px}
+.ticket .score{font-size:clamp(40px,5vw,56px);font-weight:800;line-height:1;color:var(--route)}
+.ticket .score small{display:block;font-size:13px;color:var(--mute);font-weight:600;margin-top:4px}
+.ticket .stamp{font-size:12px;color:var(--mute);margin-top:6px}
+.brand svg{vertical-align:-4px;margin-right:6px}
+@media(max-width:600px){.ticket{grid-template-columns:minmax(0,1fr)}.ticket .tr{border-left:0;border-top:2px dashed color-mix(in srgb,var(--route) 45%,transparent)}.ticket .tr::before{left:-12px;top:-13px}.ticket .tr::after{left:auto;right:-12px;top:-13px;bottom:auto}.fig{border-radius:0}.card .pbadge{width:80px;height:80px}}
+@media(prefers-reduced-motion:reduce){.qwrap.swap{animation:none}.opt,.route i::after{transition:none}}
+.spanel{margin-top:18px;background:var(--panel);border-radius:24px;padding:22px;box-shadow:0 10px 30px -22px #13242e55}
+.spanel .sd{max-width:46em;margin:0 0 16px;font-size:16px}
+.stiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:12px}
+.stile{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;text-align:left;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--rule);border-radius:18px;padding:12px 14px;cursor:pointer;min-height:64px;transition:border-color .15s}
+.stile:hover{border-color:var(--ink)}
+.stile b{display:block;font-size:16px}
+.stile span{display:block;font-size:13px;color:var(--mute);line-height:1.4}
+.sbadge{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 2px}
+.sbadge span{font-size:13px;font-weight:600;border-radius:999px;padding:3px 10px;background:color-mix(in srgb,var(--route) 12%,var(--panel));color:var(--route)}
+.sbadge span.ban{background:color-mix(in srgb,var(--risk) 14%,var(--panel));color:var(--risk)}
+.nav a[aria-current=page]{color:var(--ink);font-weight:700;box-shadow:inset 0 -3px 0 var(--route)}
+.pager{display:flex;flex-wrap:wrap;gap:12px;margin-top:40px}
+.pager a{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 20px;border-radius:999px;border:1px solid var(--rule);background:var(--panel);text-decoration:none;font-weight:600}
+.pager a.nx{margin-left:auto;background:var(--ink);color:var(--bg);border-color:var(--ink)}
+main>section{min-height:calc(100dvh - 160px)}
+.tpager{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin-top:18px}
+.tpager button{font:inherit;font-size:15px;min-width:44px;min-height:44px;border-radius:999px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer;padding:0 12px}
+.tpager button[aria-current=page]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tpager button:disabled{opacity:.4;cursor:default}
+.tpager span{font-size:14px;color:var(--mute);margin:0 8px}
+.vseg{display:inline-grid;grid-template-columns:auto auto;margin-top:18px}
+.vseg button{padding:6px 22px}
+.sortl{display:flex;gap:8px;align-items:center;font-size:15px;font-weight:600}
+.sortl select{font:inherit;font-size:16px;min-height:44px;padding:6px 10px;border:1px solid var(--rule);border-radius:14px;background:var(--panel);color:var(--ink)}
+.flag{display:inline-block;flex:none;background:url(flags.png) no-repeat;border-radius:3px;box-shadow:0 0 0 1px #0000001f;vertical-align:-2px;margin-right:8px}
+#start{background:var(--bg);color:var(--ink)}
+#start .lede{color:var(--mute)!important}
+#start .panel{color:var(--ink);border:1px solid var(--rule);box-shadow:0 1px 2px #0f23300f,0 16px 36px -22px #0f233045}
+.stile .flag{display:inline-block}
+.card .pbadge{background:var(--soft)}
+.card,.legend,.spanel,.scroll.tblwrap{box-shadow:0 1px 2px #0f23300f,0 12px 32px -20px #0f233040;border:1px solid var(--rule)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="#start"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="var(--route)"/></svg>이민 가이드북</a>
+<nav class="nav" aria-label="섹션"><a href="#start">나라 찾기</a><a href="#map">지도</a><a href="#list">국가 목록</a><a href="#special">특별 국가</a><a href="#method">기준과 출처</a></nav>
+</div></header>
+
+<main>
+<section class="band sea" id="start"><svg class="topo" viewBox="0 0 760 520" aria-hidden="true"><path d="M380,260 C470,150 600,200 560,300 C520,400 330,420 260,340 C200,270 300,230 380,260Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M352,242 C500,128 626,190 584,308 C540,416 310,442 234,352 C172,276 270,210 352,242Z" fill="none" stroke="currentColor" stroke-width="1"/><path d="M324,224 C530,106 652,180 608,316 C560,432 290,464 208,364 C144,282 240,190 324,224Z" fill="none" stroke="currentColor" stroke-width="1"/><path d="M296,206 C560,84 678,170 632,324 C580,448 270,486 182,376 C116,288 210,170 296,206Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M268,188 C590,62 704,160 656,332 C600,464 250,508 156,388 C88,294 180,150 268,188Z" fill="none" stroke="currentColor" stroke-width="1"/><path d="M240,170 C620,40 730,150 680,340 C620,480 230,530 130,400 C60,300 150,130 240,170Z" fill="none" stroke="currentColor" stroke-width="1"/><path d="M212,152 C650,18 756,140 704,348 C640,496 210,552 104,412 C32,306 120,110 212,152Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M184,134 C680,-4 782,130 728,356 C660,512 190,574 78,424 C4,312 90,90 184,134Z" fill="none" stroke="currentColor" stroke-width="1"/><path d="M156,116 C710,-26 808,120 752,364 C680,528 170,596 52,436 C-24,318 60,70 156,116Z" fill="none" stroke="currentColor" stroke-width="1"/></svg><div class="wrap">
+<h1>이민 가이드북</h1>
+<p class="lede" style="color:var(--ink)">196개국 비교와 국가 추천. 질문 12개에 답하면 조건에 맞는 나라가 나옵니다.</p>
+<div class="start">
+<div>
+<div class="panel" id="ob">
+<div class="prog"><span id="pNum">질문 1 / 12</span><div class="route" id="route" aria-hidden="true"></div></div>
+<div class="qwrap" id="qwrap"><h2 class="q" id="qT">어떤 나라를 찾고 있나요?</h2>
+<p class="help" id="qH"></p>
+<div class="opts" id="opts" role="group" aria-labelledby="qT"></div>
+</div><div class="own"><label for="note">직접 입력 (선택)</label><textarea id="note" rows="2" placeholder=""></textarea></div>
+<div class="obnav"><button type="button" class="btn" id="prev">이전</button><button type="button" class="ghost" id="skip">건너뛰기</button><button type="button" class="btn pri" id="next">다음</button></div>
+</div>
+<div class="panel" id="res" hidden>
+<div style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between"><h3 style="font-size:16px">선택한 기준</h3><div><button type="button" class="ghost" id="redo">다시 답하기</button></div></div>
+<div class="sum" id="sum"></div>
+<p class="note" id="aiNote" hidden></p>
+<details class="tune"><summary>기준 세부 조정</summary>
+<div class="seg" role="group" aria-label="추천 종류"><button type="button" id="mFinal">최종 정착지</button><button type="button" id="mBridge">미국 가는 중간 다리</button></div>
+<div id="rules" style="margin-top:12px"></div>
+<h3 style="font-size:15px;margin:16px 0 4px">중요도</h3><div id="weights"></div>
+</details>
+<div id="result" aria-live="polite" style="margin-top:22px"></div>
+</div>
+</div>
+<aside class="panel">
+<h3 style="font-size:16px">현재 순위</h3>
+<p class="small" style="margin:4px 0 12px" id="boardSub">적합도 상위 10개국</p>
+<div class="board" id="board"></div>
+</aside>
+</div>
+</div></section>
+
+
+<section class="band" id="map"><div class="wrap">
+<h2>지도</h2>
+<p class="lede">가로 안전, 세로 기회, 점 색 소득세 부담. 축은 바꿀 수 있습니다. 점선 원은 조건에 걸린 나라입니다.</p>
+<div class="axes"><label for="ax">가로축<select id="ax"></select></label><label for="ay">세로축<select id="ay"></select></label></div>
+<div class="hero">
+<div class="fig" id="fig"><svg id="chart" role="img" aria-label="국가별 안전과 기회 분포"></svg><div class="tip" id="tip"></div></div>
+<aside class="legend">
+<div><h3>요약</h3><div class="kf" style="margin-top:12px">
+<b id="kAll">196</b><span>검토한 나라 (한국 포함)</span>
+<b id="kPass">–</b><span>지금 기준을 모두 통과</span>
+<b id="kWar">–</b><span>2026년 전쟁 영향권</span>
+<b id="kIsl">–</b><span>섬나라</span>
+<b id="kTax0">–</b><span>개인소득세가 없는 나라</span></div></div>
+<div><h3>점 색: 소득세 부담</h3><div class="key" style="margin-top:10px">
+<div><i class="sw t1"></i>낮음 (최고세율 20% 미만)</div><div><i class="sw t2"></i>중간 (20~40%)</div><div><i class="sw t3"></i>높음 (40% 이상)</div><div><i class="sw tn"></i>확인 필요</div></div></div>
+<div><h3>표시</h3><div class="key" style="margin-top:10px">
+<div><i class="sw pk"></i>추천 1위</div><div><i class="sw fd"></i>기준에 걸린 나라</div><div><i class="sw base"></i>한국 (현재 위치)</div></div>
+<p class="small" style="margin:10px 0 0">점 크기: 인구</p></div>
+</aside>
+</div>
+</div></section>
+
+<section class="band" id="list"><div class="wrap">
+<h2>국가 목록</h2>
+<p class="lede">196개국. 표 또는 카드로 볼 수 있고, 나라를 누르면 상세 정보가 열립니다.</p>
+<div class="seg vseg" role="group" aria-label="보기 방식"><button type="button" id="vTbl" aria-pressed="true">표로 보기</button><button type="button" id="vCard" aria-pressed="false">카드로 보기</button></div>
+<div class="tools">
+<input type="search" id="q" placeholder="나라 이름 검색" aria-label="나라 이름 검색">
+<div class="chips" id="regs"></div>
+<label class="sortl" for="csort">정렬<select id="csort"></select></label>
+<label class="chk"><input type="checkbox" id="onlyPass">기준 통과한 나라만</label>
+</div>
+<div id="tblView"><div class="keys"><span><b>인구 피라미드</b></span><span><i class="sw3" style="background:var(--young)"></i>0~10대</span><span><i class="sw3" style="background:var(--mid)"></i>20~60대</span><span><i class="sw3" style="background:var(--old)"></i>70대 이상</span></div>
+<div class="keys"><span><span class="mt" aria-hidden="true"><i style="width:80%;background:color-mix(in srgb,var(--risk) 86%,var(--panel))"></i></span><b>위험 지표</b><small>양극화, 전쟁 위험. 길고 진할수록 위험</small></span><span><span class="mt" aria-hidden="true"><i style="width:80%;background:color-mix(in srgb,var(--good) 86%,var(--panel))"></i></span><b>환경 지표</b><small>치안, 외국인 수용, 일자리. 길고 진할수록 좋음</small></span></div>
+<div class="scroll tblwrap"><table id="tbl"><thead><tr id="thr"></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="tpager" id="tpager"></div></div>
+<div id="cardView" hidden><div class="cards" id="cards"></div>
+<div style="text-align:center;margin-top:22px"><button type="button" class="btn" id="moreCards" hidden></button></div></div>
+</div></section>
+
+<section class="band" id="special"><div class="wrap">
+<h2>특별 국가</h2>
+<p class="lede">성격이 뚜렷한 나라만 따로 분류했습니다.</p>
+<div class="chips" id="stabs" style="margin-top:16px"></div>
+<div class="spanel" id="spanel"></div>
+</div></section>
+
+<section class="band" id="method"><div class="wrap">
+<h2>기준과 출처</h2>
+<div class="cats" style="margin-top:16px">
+<div class="cat"><h4>공개 지표</h4><p>혁신: WIPO 세계혁신지수(GII) 2026 순위, 139개국.<br>평화: 세계평화지수(GPI) 2026 순위, 163개국.<br>연령 구성: UN 세계인구전망 2024의 2025년 추정치(반올림).<br>지수에 없는 나라는 –로 표시.</p></div>
+<div class="cat"><h4>인구 피라미드</h4><p>0~14세, 15~64세, 65세 이상 비중을 5세 단위로 나눠 그린 근사치. 실제 5세 단위 통계가 아니며 남녀 구분 없음. 노랑 0~10대, 파랑 20~60대, 분홍 70대 이상.</p></div>
+<div class="cat"><h4>편집 평가 (1~5점)</h4><p>양극화, 전쟁과 내전 위험, 치안, 외국인 수용도, 일자리와 사업 기회, 국력, 미국행 다리 가치, 진입 난이도. 위 지표와 2026년 11월까지의 보도를 바탕으로 한 판단. 권위주의 국가는 선거 경쟁이 제한돼 양극화가 낮게 나옴.</p></div>
+<div class="cat"><h4>적합도</h4><p>항목별 점수(0~1)를 중요도(0~3)로 가중평균해 100점으로 환산. 꼭 지킬 조건에 걸린 나라와 이주 불가 국가는 순위에서 제외. 직접 입력한 답은 Claude가 해석하고, 사용할 수 없으면 키워드로 해석.</p></div>
+<div class="cat"><h4>세금</h4><p>개인소득세 최고 한계세율, 위키백과 국가별 세율표 기준. 나라에 따라 지방세나 사회보험료 포함. 수정: 한국 49.5%(지방소득세 포함), 스위스 약 45%(칸톤 합산), 루마니아 10%. 소득세가 없는 나라는 0%. 외국인 특례가 있으면 가산. 한국과의 조세조약은 PwC 자료 기준.</p></div>
+<div class="cat"><h4>한계</h4><p>2026년 11월 26일 기준. 비자 제도와 전쟁 상황은 자주 바뀌므로 지원 전 각국 이민청과 대사관 공지를 확인할 것.</p></div>
+</div>
+<h3 style="margin:26px 0 12px">주요 출처</h3>
+<ol class="src">
+<li><a href="https://www.wipo.int/web-publications/global-innovation-index-2026/en/gii-2026-results.html">WIPO, Global Innovation Index 2026 results</a></li>
+<li><a href="https://www.mappr.co/?p=92251">Mappr, GII 2026 전체 139개국 순위표</a></li>
+<li><a href="https://www.visionofhumanity.org/wp-content/uploads/2026/06/Global-Peace-Index-2026-A3-map-poster.pdf">Institute for Economics and Peace, Global Peace Index 2026</a></li>
+<li><a href="https://population.un.org/wpp/">UN, World Population Prospects 2024</a></li>
+<li><a href="https://www.nbcchicago.com/news/national-international/imf-forecast-world-growth-risks-ai-boom-debt/4001724/">AP, IMF 2026년 10월 세계경제전망</a></li>
+<li><a href="https://www.everycrsreport.com/reports/IN12747.html">미 의회조사국(CRS), H-1B Executive Actions in 2026</a></li>
+<li><a href="https://www.visaverge.com/h1b/south-korea-seeks-dedicated-us-visa-channel-for-masga-shipbuilding-workers/">VisaVerge, E-4(Partner with Korea Act) 계류 현황</a></li>
+<li><a href="https://www.opb.org/article/2026/11/04/2026-midterms-democrats-win-the-senate/">NPR, 2026 미국 중간선거 결과</a></li>
+<li><a href="https://www.news4jax.com/news/world/2026/05/19/the-uaes-economy-and-image-as-mideast-haven-are-tested-by-war/">AP, 이란 전쟁과 UAE</a></li>
+<li><a href="https://www.newarab.com/news/one-eight-britons-left-uae-amid-iran-war-report">The New Arab, UAE 영국인 거주자 이탈</a></li>
+<li><a href="https://www.al-monitor.com/originals/2026/10/saudi-arabia-faces-economic-contraction-war-woes-mount">Al-Monitor/AFP, 사우디 역성장 전망과 후티 공격</a></li>
+<li><a href="https://www.aljazeera.com/amp/news/2026/7/30/nato-jets-scramble-as-russian-missile-detonates-in-poland">Al Jazeera, 폴란드 영토 내 러시아 미사일 폭발</a></li>
+<li><a href="https://www.wilsoncenter.org/article/nearshoring-and-usmca-review-view-chihuahua">Wilson Center, USMCA 검토와 니어쇼어링</a></li>
+<li><a href="https://www.deloitte.com/us/en/insights/economy/americas/mexico-economic-outlook.html">Deloitte, 멕시코 경제 전망</a></li>
+<li><a href="https://vietnamnet.vn/en/vietnam-sees-high-growth-prospects-2559876.html">VietNamNet, 베트남 2026년 상반기 성장률</a></li>
+<li><a href="https://www.tresor.economie.gouv.fr/Articles/7246bd28-256f-44fc-8611-093df4892591/files/eba5da17-9094-44ec-baef-abf1186cd8d1">프랑스 재무부, 아르헨티나 물가 추이</a></li>
+<li><a href="https://www.ibtimes.com/china-unannounced-naval-deployment-taiwan-blockade-3809720">IBTimes/Reuters, 2026년 11월 중국 대만 주변 해상 훈련</a></li>
+<li><a href="https://pbs.org/newshour/world/hungarian-prime-minister-viktor-orban-ousted-after-painful-election-result-ending-16-years-in-power">AP, 헝가리 2026년 총선 정권 교체</a></li>
+<li><a href="https://github.com/lipis/flag-icons">flag-icons (MIT 라이선스), 국기 이미지</a></li>
+<li><a href="https://en.wikipedia.org/wiki/List_of_countries_by_tax_rates">Wikipedia, List of countries by tax rates (개인소득세 최고세율)</a></li>
+<li><a href="https://taxsummaries.pwc.com/republic-of-korea/individual/foreign-tax-relief-and-tax-treaties">PwC, 한국의 조세조약 체결국</a></li>
+<li><a href="https://www.everycrsreport.com/reports/R49186.html">미 의회조사국(CRS), 마두로 이후 베네수엘라</a></li>
+</ol>
+</div></section>
+</main>
+<footer class="band"><div class="wrap">이민 가이드북 / 2026년 11월 26일 기준 / 참고 자료이며 법률 또는 이민 자문이 아닙니다.</div></footer>
+
+<dialog id="dlg" aria-labelledby="dTitle"><div class="dh"><h2 id="dTitle"></h2><button type="button" class="x" id="dClose">닫기</button></div><div class="db" id="dBody"></div></dialog>
+
+<script>
+const D=[
+{c:'US',n:'미국',en:'United States',r:'북미',pop:347,a:17.5,o:18,gov:'연방 대통령제 공화국',reg:'민주주의',pol:5,gii:3,gpi:134,war:2,safe:3,open:2,job:5,pow:5,br:5,ve:2,isl:0,weu:0,no:0,
+feat:'세계 최대 경제이자 AI, 자본 시장의 중심. 2026년 이란 전쟁의 당사국이지만 본토는 공격받지 않았고, 11월 중간선거에서 민주당이 상하원을 모두 가져가 분점정부가 됐다.',
+pro:['연봉, 기회, 투자 자본 규모가 압도적','혁신지수 세계 3위, AI, 반도체 산업의 중심','한국 국적 전용 경로가 있음(E-2, L-1, 계류 중인 E-4 법안)'],
+con:['취업비자 장벽이 높아짐(고임금자 우대 추첨, 10만 달러 수수료 소송)','정치 양극화와 총기 사건, 평화지수 134위','의료비, 주거비 부담이 큼'],
+visa:'J-1 인턴 → F-1, STEM OPT → H-1B, 영주권, 또는 한국 기업을 거치는 E-2, L-1.'},
+{c:'KR',n:'한국',en:'South Korea',r:'아시아',base:1,pop:51.7,a:10.6,o:20.3,gov:'대통령제 공화국',reg:'민주주의',pol:5,gii:4,gpi:57,war:4,safe:5,open:2,job:3,pow:3,br:4,ve:5,isl:0,weu:0,no:0,
+feat:'비교의 기준점. 혁신지수 세계 4위지만 출산율이 세계 최저 수준이라 2025년 초고령사회에 들어섰다.',
+pro:['치안, 인프라 최상급','혁신지수 4위','미국행 한국인 전용 비자의 출발점'],
+con:['출산율 세계 최저, 인구 역피라미드화','북한 리스크','재벌 중심 구조와 정치 양극화'],
+visa:'현재 거주국. 한국 본사 근무 경력만으로 L-1, E-2를 노릴 수 있다.'},
+{c:'AE',n:'아랍에미리트',en:'UAE',r:'중동',pop:11,a:14.8,o:2.4,gov:'7개 토후국 연방 군주제',reg:'권위주의',pol:1,gii:25,gpi:73,war:5,safe:5,open:4,job:4,pow:2,br:3,ve:4,isl:0,weu:0,no:0,
+feat:'인구 약 88%가 외국인인 걸프의 비즈니스 허브. 2026년 이란 전쟁에서 이란의 미사일, 드론 공격을 가장 많이 받은 나라가 됐고, 영국인 거주자 8명 중 1명꼴로 떠났다는 보도가 나왔다.',
+pro:['소득세가 없고 연봉이 높음','외국인 중심 사회라 배척이 적음','혁신지수 25위로 걸프 1위'],
+con:['2026년 이란 공격을 가장 많이 받음','시민권은 사실상 불가, 체류는 고용에 묶임','정치적 자유 제한'],
+visa:'고용 기반 취업비자(2년 단위), 투자, 전문직 골든비자.'},
+{c:'SA',n:'사우디아라비아',en:'Saudi Arabia',r:'중동',pop:35,a:24,o:3,gov:'절대군주제',reg:'권위주의',pol:1,gii:42,gpi:95,war:5,safe:4,open:2,job:3,pow:3,br:2,ve:3,isl:0,weu:0,no:0,
+feat:'비전 2030으로 탈석유를 추진해 왔다. 2026년 7월 후티 공격이 재개돼 리야드 공항 피격으로 13명이 숨졌고, IMF는 올해 역성장을 전망했다.',
+pro:['건설, 에너지, 플랜트 수요가 큼','한국 건설, 플랜트 기업 진출이 많음','세금 부담이 적음'],
+con:['후티, 이란 공격의 직접 피해','메가프로젝트 축소, 사우디인 우선 고용 정책','사회 규범 제약'],
+visa:'고용 스폰서 취업비자, 프리미엄 레지던시.'},
+{c:'QA',n:'카타르',en:'Qatar',r:'중동',pop:3.1,a:15.5,o:1.5,gov:'절대군주제(에미르)',reg:'권위주의',pol:1,gii:47,gpi:31,war:4,safe:5,open:3,job:3,pow:2,br:2,ve:3,isl:0,weu:0,no:0,
+feat:'1인당 소득 최상위의 가스 부국. 미군 알우데이드 기지가 있어 이란의 보복 표적이 되는 동시에 미국-이란 협상을 중재한다.',
+pro:['치안이 매우 좋음','고소득, 면세','LNG, 인프라 일자리'],
+con:['미군 기지 때문에 전쟁 표적','시장이 작아 직종이 다양하지 않음','시민권 불가'],
+visa:'고용 스폰서 취업비자.'},
+{c:'OM',n:'오만',en:'Oman',r:'중동',pop:5.3,a:22,o:3,gov:'절대군주제(술탄)',reg:'권위주의',pol:1,gii:69,gpi:60,war:3,safe:5,open:3,job:2,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'걸프에서 가장 조용한 중립국이자 전통적 중재자. 다만 호르무즈 해협 바로 옆이라 해운, 에너지 충격을 그대로 받는다.',
+pro:['치안과 중립 외교','걸프 중 생활비가 낮은 편','외국인에게 비교적 온화'],
+con:['자국민 우선 고용으로 외국인 일자리 축소','혁신, 시장 규모가 작음','호르무즈 리스크'],
+visa:'고용 스폰서 취업비자.'},
+{c:'KW',n:'쿠웨이트',en:'Kuwait',r:'중동',pop:4.9,a:21,o:3,gov:'입헌군주제(2024년 의회 정지)',reg:'권위주의',pol:2,gii:62,gpi:49,war:4,safe:4,open:2,job:2,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'석유 의존도가 극단적으로 높고 외국인 인력 감축 정책을 펴고 있다. 미군 기지가 있어 이란의 위협 대상으로 거론된다.',
+pro:['고소득, 면세','치안 양호','석유 관련 고급 일자리'],
+con:['외국인 감축 정책','미군 기지발 전쟁 리스크','산업 다양성 부족'],
+visa:'고용 스폰서 취업비자.'},
+{c:'BH',n:'바레인',en:'Bahrain',r:'중동',pop:1.6,a:19,o:4,gov:'입헌군주제',reg:'권위주의',pol:3,gii:64,gpi:108,war:5,safe:4,open:4,job:3,pow:1,br:1,ve:3,isl:1,weu:0,no:0,
+feat:'걸프의 금융, 핀테크 허브인 섬나라. 미 해군 5함대 본부가 있고, 2026년 11월 이란이 바레인의 미군 레이더를 타격했다고 주장했다.',
+pro:['걸프에서 외국인 규제가 느슨한 편','금융, 핀테크 허브','생활비가 이웃보다 낮음'],
+con:['섬나라','미군 기지 표적','시장이 작음'],
+visa:'고용 비자, 골든 레지던시.'},
+{c:'IL',n:'이스라엘',en:'Israel',r:'중동',pop:10,a:27.5,o:12.5,gov:'의원내각제',reg:'민주주의',pol:5,gii:15,gpi:159,war:5,safe:3,open:2,job:4,pow:3,br:3,ve:2,isl:0,weu:0,no:0,
+feat:'스타트업 밀도가 세계 최상급인 기술 강국. 그러나 평화지수 163개국 중 159위이고 2026년 이란 전쟁의 직접 당사국이다.',
+pro:['스타트업, 보안, 반도체 생태계','혁신지수 15위','미국 테크 업계와 연결이 강함'],
+con:['전쟁 직접 당사국','유대인이 아니면 이민 경로가 거의 없음','정치 극단화'],
+visa:'전문직 취업비자(B-1) 위주, 영주는 매우 어려움.'},
+{c:'TR',n:'튀르키예',en:'Türkiye',r:'중동',pop:86,a:21.5,o:10.5,gov:'대통령제',reg:'혼합',pol:5,gii:45,gpi:136,war:3,safe:3,open:3,job:2,pow:3,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'유럽, 중동, 중앙아시아를 잇는 제조, 물류 허브. 고물가, 권위주의화, 이란, 시리아 국경 긴장이 부담이고 2026년 사우디, 파키스탄과 방위협정을 맺어 파병 길을 열었다.',
+pro:['큰 내수시장과 제조업','유럽과 중동을 잇는 물류 거점','인구 구조가 비교적 젊음'],
+con:['만성 고물가와 통화 불안','권위주의화와 양극화','이란 국경 긴장'],
+visa:'거주허가(취업, 투자), 투자 시민권 제도.'},
+{c:'PL',n:'폴란드',en:'Poland',r:'유럽',pop:36.6,a:15,o:20,gov:'의원내각제(직선 대통령)',reg:'민주주의',pol:5,gii:39,gpi:22,war:4,safe:5,open:3,job:3,pow:3,br:3,ve:3,isl:0,weu:0,no:0,
+feat:'30년 넘게 꾸준히 성장한 중유럽 제조 강국이자 K-방산, 배터리의 유럽 거점. 2026년 7월 러시아의 우크라이나 공습과 연관된 미사일이 폴란드 영토에서 폭발하는 등 접경 리스크가 커졌다.',
+pro:['치안 최상급(평화지수 22위)','LG에너지솔루션 등 한국 기업 다수','EU 단일시장 접근'],
+con:['저출산으로 빠른 고령화(65세 이상 약 20%)','러시아 드론, 미사일 영공 침범 반복','혁신 순위가 10년째 39~41위에서 정체'],
+visa:'취업허가 + 임시거주허가, EU 블루카드.'},
+{c:'CZ',n:'체코',en:'Czechia',r:'유럽',pop:10.9,a:15.5,o:21,gov:'의원내각제',reg:'민주주의',pol:4,gii:33,gpi:13,war:2,safe:5,open:3,job:3,pow:2,br:2,ve:3,isl:0,weu:0,no:0,
+feat:'자동차, 기계 산업이 강한 중유럽 공업국. 현대차 공장이 있고 치안이 아주 좋지만 고령화가 빠르다.',
+pro:['평화지수 13위','현대차 등 한국 제조업 진출','중유럽 물류 중심'],
+con:['고령화(65세 이상 약 21%)','체코어 장벽','시장 규모 작음'],
+visa:'취업 카드, EU 블루카드.'},
+{c:'EE',n:'에스토니아',en:'Estonia',r:'유럽',pop:1.37,a:16.5,o:21,gov:'의원내각제',reg:'민주주의',pol:2,gii:17,gpi:25,war:4,safe:5,open:3,job:3,pow:1,br:2,ve:4,isl:0,weu:0,no:0,
+feat:'전자정부와 e-레지던시로 유명한 디지털 국가. 혁신지수 17위로 중동부 유럽 1위지만 인구가 140만이고 러시아와 국경을 맞댄다.',
+pro:['혁신지수 17위, 스타트업 친화','e-레지던시로 법인 설립이 쉬움','영어 사용률 높음'],
+con:['러시아 접경','인구, 시장이 매우 작음','고령화'],
+visa:'스타트업 비자, 디지털 노마드 비자.'},
+{c:'RO',n:'루마니아',en:'Romania',r:'유럽',pop:19,a:16,o:20,gov:'준대통령제',reg:'민주주의',pol:4,gii:49,gpi:45,war:3,safe:4,open:3,job:2,pow:2,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'IT 아웃소싱이 강한 동유럽 국가. 우크라이나와 맞닿아 러시아 드론 잔해 사고가 이어지고, 인구 유출로 고령화가 진행 중이다.',
+pro:['생활비가 낮음','IT 인력과 아웃소싱 산업','EU 회원국'],
+con:['러시아 드론 잔해 사고','인구 유출과 고령화','임금 수준 낮음'],
+visa:'취업허가 + 장기 체류 비자.'},
+{c:'GE',n:'조지아',en:'Georgia',r:'유럽',pop:3.7,a:20.5,o:16,gov:'의원내각제',reg:'혼합',pol:5,gii:57,gpi:94,war:3,safe:4,open:4,job:1,pow:1,br:1,ve:5,isl:0,weu:0,no:0,
+feat:'한국인이 비자 없이 1년간 머물 수 있고 생활비가 낮다. 2024년 이후 친러 성향 집권당과 시위대의 대립으로 정치가 경색됐다.',
+pro:['무비자 1년 체류','생활비, 창업 비용이 낮음','외국인에게 우호적'],
+con:['양질의 일자리가 거의 없음','러시아 영향과 정치 경색','점령지 분쟁'],
+visa:'무비자 1년, 거주허가(사업, 부동산).'},
+{c:'DE',n:'독일',en:'Germany',r:'유럽',pop:84,a:14,o:23,gov:'연방 의원내각제',reg:'민주주의',pol:3,gii:11,gpi:28,war:2,safe:4,open:3,job:3,pow:4,br:2,ve:3,isl:0,weu:1,no:0,
+feat:'유럽 최대 제조업 국가지만 성장이 수년째 정체됐다. AI와 소프트웨어 혁신이 미국, 아시아에 뒤처진다는 평가가 많다.',
+pro:['제조업, 엔지니어링 강국','블루카드 제도가 잘 정비됨','사회보장'],
+con:['서유럽에 속함','고령화(65세 이상 약 23%)','AI, 소프트웨어 혁신 약세'],
+visa:'EU 블루카드, 기회카드.'},
+{c:'GB',n:'영국',en:'United Kingdom',r:'유럽',pop:69,a:17.5,o:19.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:4,gii:6,gpi:39,war:2,safe:4,open:3,job:4,pow:4,br:3,ve:3,isl:1,weu:1,no:0,
+feat:'금융, 대학, AI 연구가 강하고 혁신지수 6위. 하지만 섬나라이자 서유럽이라 두 가지 조건에 걸린다.',
+pro:['혁신지수 6위','런던 금융, AI 연구','영어권'],
+con:['섬나라이자 서유럽','저성장과 높은 생활비','이민 규제 강화'],
+visa:'숙련 노동자 비자, 청년 교류(YMS) 제도.'},
+{c:'CH',n:'스위스',en:'Switzerland',r:'유럽',pop:9,a:15,o:19.5,gov:'연방 직접민주제',reg:'민주주의',pol:2,gii:1,gpi:3,war:1,safe:5,open:2,job:4,pow:2,br:2,ve:1,isl:0,weu:1,no:0,
+feat:'16년 연속 혁신지수 1위, 평화지수 3위. 다만 비EU 출신에게 취업 쿼터가 매우 좁고 서유럽 조건에 걸린다.',
+pro:['혁신지수 1위','평화지수 3위','고임금'],
+con:['비EU 취업 쿼터가 매우 좁음','생활비 세계 최상위','서유럽에 속함'],
+visa:'비EU 쿼터 취업허가(매우 경쟁적).'},
+{c:'PT',n:'포르투갈',en:'Portugal',r:'유럽',pop:10.4,a:12.5,o:24.5,gov:'준대통령제',reg:'민주주의',pol:3,gii:30,gpi:7,war:1,safe:5,open:4,job:2,pow:1,br:1,ve:4,isl:0,weu:1,no:0,
+feat:'평화지수 7위에 외국인에게 개방적이고 2026년 혁신지수 30위에 들었다. 그러나 인구가 가장 늙은 축이고 임금이 낮다.',
+pro:['평화지수 7위','디지털 노마드 비자','외국인 친화'],
+con:['초고령(65세 이상 약 25%)','서유럽 최저 수준 임금','서유럽에 속함'],
+visa:'디지털 노마드 비자, 구직 비자.'},
+{c:'CA',n:'캐나다',en:'Canada',r:'북미',pop:41.5,a:15.5,o:19.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:3,gii:16,gpi:14,war:1,safe:4,open:4,job:3,pow:3,br:5,ve:3,isl:0,weu:0,no:1,
+feat:'미국과 국경, 언어, 경제가 맞물린 나라. 시민권을 따면 TN 비자로 미국 취업이 쉬워지지만, 기회와 자본 규모는 미국에 한참 못 미친다.',
+pro:['시민권 취득 시 TN 비자로 미국행','평화지수 14위, 전쟁 위험 최저','이민 제도가 체계적'],
+con:['기회, 자본, 혁신이 미국에 크게 못 미침','시민권까지 최소 5년 안팎','2025년부터 이민 정원 축소'],
+visa:'익스프레스 엔트리(영주권), 워킹홀리데이, 학업 후 취업허가.'},
+{c:'MX',n:'멕시코',en:'Mexico',r:'중남미',pop:131,a:24,o:9,gov:'연방 대통령제',reg:'혼합',pol:4,gii:65,gpi:139,war:2,safe:2,open:4,job:3,pow:3,br:4,ve:4,isl:0,weu:0,no:0,
+feat:'미국의 최대 교역국이자 니어쇼어링 생산기지. 2026년 7월 USMCA 검토에서 미국이 연장에 동의하지 않아(협정은 유지) 투자 불확실성이 커졌고, 카르텔 폭력의 지역 편차가 크다.',
+pro:['미국과 육로로 이어진 공급망의 중심','기아, 삼성, LG 등 한국 기업 공장 다수','젊은 인구(근로연령 약 67%)'],
+con:['지역별 치안 편차가 극심(평화지수 139위)','2026년 성장 둔화(1분기 0.4%)','사법개혁 이후 제도 불안'],
+visa:'취업비자 → 임시거주, 한국 기업 주재원.'},
+{c:'PA',n:'파나마',en:'Panama',r:'중남미',pop:4.6,a:24.5,o:9.5,gov:'대통령제',reg:'민주주의',pol:3,gii:89,gpi:81,war:1,safe:3,open:4,job:3,pow:1,br:2,ve:4,isl:0,weu:0,no:0,
+feat:'운하, 물류, 금융의 허브이고 달러를 쓴다. 한국이 포함된 우호국 거주 제도가 있고 중남미에서 소득이 높은 편이다.',
+pro:['물류, 해운 경력을 쌓기 좋음','달러 경제','우호국 거주 제도'],
+con:['시장이 작음','미국으로 연결되는 한국 기업 경로가 약함','도시 외곽 치안'],
+visa:'우호국 거주 제도(고용 또는 투자 요건).'},
+{c:'CR',n:'코스타리카',en:'Costa Rica',r:'중남미',pop:5.2,a:20,o:11,gov:'대통령제',reg:'민주주의',pol:3,gii:70,gpi:62,war:1,safe:3,open:4,job:2,pow:1,br:2,ve:4,isl:0,weu:0,no:0,
+feat:'군대가 없는 중미의 안정적인 민주국가. 인텔, 의료기기 등 미국 기업 공장이 있지만 최근 마약 조직 관련 살인이 늘었다.',
+pro:['군대가 없고 정치가 안정적','미국 기업 공장에서 미국식 경력','혁신지수 70위권 진입'],
+con:['시장 규모가 작음','강력범죄 증가 추세','임금 수준 보통'],
+visa:'디지털 노마드 비자, 고용 거주.'},
+{c:'CL',n:'칠레',en:'Chile',r:'중남미',pop:19.8,a:18,o:14,gov:'대통령제',reg:'민주주의',pol:4,gii:51,gpi:52,war:1,safe:3,open:3,job:3,pow:2,br:2,ve:4,isl:0,weu:0,no:0,
+feat:'구리, 리튬 자원국이자 남미에서 제도가 가장 탄탄한 편. 불법 이민 단속을 핵심 공약으로 내건 카스트 대통령이 2026년 3월 취임했다.',
+pro:['남미 최상위 제도, 경제 안정','구리, 리튬 공급망','한-칠레 FTA'],
+con:['이민 규제 강화 기조','미국행 연결고리가 약함','고령화 시작'],
+visa:'임시 거주 비자(고용).'},
+{c:'UY',n:'우루과이',en:'Uruguay',r:'중남미',pop:3.4,a:18,o:16,gov:'대통령제',reg:'민주주의',pol:2,gii:66,gpi:43,war:1,safe:3,open:4,job:2,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'남미에서 민주주의 수준이 가장 높고 정치가 차분하다. 다만 인구 340만의 작은 시장이고 늙어가고 있다.',
+pro:['남미 최고 수준의 민주주의','정치 양극화 낮음','거주권 취득이 비교적 쉬움'],
+con:['시장이 매우 작음','고령화','물가가 높은 편'],
+visa:'거주권 신청(소득 증빙).'},
+{c:'BR',n:'브라질',en:'Brazil',r:'중남미',pop:212,a:20,o:11,gov:'연방 대통령제',reg:'민주주의',pol:5,gii:53,gpi:124,war:1,safe:2,open:4,job:2,pow:3,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'남미 최대의 경제, 인구 대국. 시장은 크지만 강력범죄와 정치 양극화가 심하다.',
+pro:['큰 내수시장','인구 구조가 비교적 젊음','외국인에게 개방적'],
+con:['강력범죄(평화지수 124위)','극심한 양극화','포르투갈어, 관료주의'],
+visa:'취업 거주허가, 디지털 노마드 비자.'},
+{c:'AR',n:'아르헨티나',en:'Argentina',r:'중남미',pop:45.7,a:22,o:12,gov:'연방 대통령제',reg:'민주주의',pol:5,gii:75,gpi:72,war:1,safe:3,open:4,job:2,pow:2,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'밀레이 정부의 긴축으로 물가 상승률이 2023년 말 연 161%에서 2026년 8월 33.5%까지 내려왔지만, 성장과 일자리 회복은 더디다.',
+pro:['인재, 교육 수준이 높음','물가 안정 추세','외국인 정착이 쉬운 편'],
+con:['아직 높은 물가','일자리 회복 지연(기업 수 감소)','극심한 양극화'],
+visa:'거주권(고용, 소득 증빙), 디지털 노마드 비자.'},
+{c:'CO',n:'콜롬비아',en:'Colombia',r:'중남미',pop:53,a:21,o:10,gov:'대통령제',reg:'민주주의',pol:5,gii:78,gpi:141,war:3,safe:1,open:4,job:2,pow:2,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'성장 잠재력은 있지만 무장조직과 마약 카르텔 폭력이 여전하다. 평화지수 141위로 치안이 매우 나쁜 나라로 분류했다.',
+pro:['젊은 인구','디지털 노마드 수요','생활비가 낮음'],
+con:['치안 매우 나쁨(평화지수 141위)','무장조직 분쟁','정치 양극화'],
+visa:'디지털 노마드 비자, 취업 비자.'},
+{c:'PE',n:'페루',en:'Peru',r:'중남미',pop:34,a:24,o:10,gov:'대통령제',reg:'혼합',pol:4,gii:80,gpi:107,war:1,safe:2,open:3,job:2,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'광물 수출국으로 거시경제는 안정적이지만, 몇 년 사이 대통령이 여러 번 바뀔 만큼 정치가 불안하다.',
+pro:['안정적인 거시경제','광물 산업','젊은 인구'],
+con:['정치 불안정','치안 나쁨','시장 다양성 부족'],
+visa:'취업 거주허가.'},
+{c:'CN',n:'중국',en:'China',r:'아시아',pop:1409,a:16,o:15,gov:'공산당 일당제',reg:'권위주의',pol:1,gii:10,gpi:118,war:4,safe:4,open:2,job:2,pow:5,br:1,ve:4,isl:0,weu:0,no:1,
+feat:'혁신지수 10위로 중간소득국 중 유일한 톱10. 2026년 11월에도 대만 주변에 군함, 해경선 100척 이상을 동원한 훈련을 벌였다.',
+pro:['혁신지수 10위, 제조, 전기차, AI','거대한 시장','한국인 단기 무비자'],
+con:['대만 유사시 전쟁 리스크','표현의 자유, 데이터 통제','외국인 일자리 감소'],
+visa:'Z 취업비자(고용 초청 필요).'},
+{c:'JP',n:'일본',en:'Japan',r:'아시아',pop:123,a:11,o:29.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:2,gii:12,gpi:10,war:3,safe:5,open:2,job:3,pow:4,br:2,ve:5,isl:1,weu:0,no:0,
+feat:'치안, 인프라는 최상급이지만 섬나라이고 세계에서 가장 늙은 나라다(65세 이상 약 30%).',
+pro:['평화지수 10위, 치안 최상급','한국과 가까움','외국인 인력 수요 증가'],
+con:['섬나라','초고령사회','임금 정체'],
+visa:'기술, 인문지식, 국제업무 비자, 특정기능.'},
+{c:'SG',n:'싱가포르',en:'Singapore',r:'아시아',pop:6,a:14.5,o:17,gov:'의원내각제(1당 우위)',reg:'혼합',pol:1,gii:5,gpi:8,war:1,safe:5,open:3,job:5,pow:2,br:3,ve:3,isl:1,weu:0,no:0,
+feat:'혁신지수 5위의 아시아 금융, 본사 허브. 기회는 최상급이지만 섬 도시국가라 기준에서 빠진다.',
+pro:['혁신 5위, 아시아 본사 허브','치안 최상급','영어권'],
+con:['섬나라','생활비 최상위','영주권 문턱이 높음'],
+visa:'EP(고용허가), ONE Pass.'},
+{c:'TW',n:'대만',en:'Taiwan',r:'아시아',pop:23.3,a:11.5,o:19.5,gov:'준대통령제',reg:'민주주의',pol:4,gii:null,gpi:null,war:5,safe:5,open:3,job:4,pow:2,br:2,ve:5,isl:1,weu:0,no:0,
+feat:'TSMC를 품은 반도체 핵심국이지만 섬나라이고, 중국의 봉쇄 훈련이 상시화되면서 전쟁 리스크가 가장 큰 곳 중 하나다.',
+pro:['반도체 산업','치안 좋음','민주주의'],
+con:['섬나라','중국 봉쇄, 침공 리스크','저출산'],
+visa:'골드카드, 취업허가.'},
+{c:'VN',n:'베트남',en:'Vietnam',r:'아시아',pop:101,a:22.5,o:9,gov:'공산당 일당제',reg:'권위주의',pol:1,gii:43,gpi:41,war:2,safe:4,open:4,job:3,pow:2,br:3,ve:4,isl:0,weu:0,no:0,
+feat:'2026년 상반기 8.18% 성장한 아시아 최고 성장국이자 한국의 최대 투자처. 삼성, LG가 생산 핵심 거점을 두고 있다.',
+pro:['한국 기업 주재, 현지 채용 기회가 많음','한국에 우호적인 정서, 낮은 생활비','항아리형 인구(근로연령 약 69%)'],
+con:['일당 체제와 언론 통제','현지 채용 급여가 낮음','출산율 하락으로 고령화가 다가옴'],
+visa:'노동허가 + 임시거주카드(TRC).'},
+{c:'MY',n:'말레이시아',en:'Malaysia',r:'아시아',pop:35.6,a:22,o:8,gov:'입헌군주제, 의원내각제',reg:'민주주의',pol:3,gii:34,gpi:12,war:1,safe:4,open:3,job:3,pow:2,br:2,ve:4,isl:0,weu:0,no:0,
+feat:'인구 대부분이 반도 본토에 살아 대륙 기준을 충족하고, 평화지수 12위로 아시아 최상위권이다. 반도체 후공정, 데이터센터 투자가 몰리지만 말레이계 우대 정책이 외국인에게 벽이 된다.',
+pro:['평화지수 12위','반도체, 데이터센터 투자 붐','영어가 통함'],
+con:['말레이계 우대 정책','한국 기업 경로가 베트남보다 적음','장기 정착 문턱'],
+visa:'고용 패스(EP), DE Rantau(디지털 노마드).'},
+{c:'TH',n:'태국',en:'Thailand',r:'아시아',pop:71.6,a:15,o:16.5,gov:'입헌군주제',reg:'혼합',pol:4,gii:44,gpi:101,war:2,safe:3,open:4,job:2,pow:2,br:1,ve:5,isl:0,weu:0,no:0,
+feat:'관광, 제조업 중심의 동남아 2위 경제. 고령화가 빠르고 군부, 왕실을 둘러싼 정치 갈등, 캄보디아 국경 충돌이 있었다.',
+pro:['생활 인프라, 의료가 좋음','외국인에게 개방적','장기 체류 비자(LTR)'],
+con:['빠른 고령화','정치 불안정','외국인 직종 제한'],
+visa:'LTR 비자, 노동허가.'},
+{c:'IN',n:'인도',en:'India',r:'아시아',pop:1460,a:24.5,o:7,gov:'연방 의원내각제',reg:'민주주의',pol:4,gii:38,gpi:127,war:3,safe:2,open:3,job:2,pow:4,br:2,ve:3,isl:0,weu:0,no:0,
+feat:'인구 1위, 성장 상위권의 차세대 대국. 평화지수는 2025년 115위에서 2026년 127위로 떨어졌고 외국인에게 생활 인프라 격차가 크다.',
+pro:['거대한 젊은 인구','IT, 서비스 산업 성장','혁신지수 38위로 상승 중'],
+con:['외국인 일자리 경쟁력 낮음','치안, 위생 인프라 격차','파키스탄 등 국경 분쟁'],
+visa:'취업비자(E), 주재원.'},
+{c:'ID',n:'인도네시아',en:'Indonesia',r:'아시아',pop:285,a:24,o:7.5,gov:'대통령제',reg:'민주주의',pol:3,gii:55,gpi:69,war:1,safe:3,open:4,job:2,pow:3,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'인구 2억 8천만의 동남아 최대 경제. 니켈, 배터리 공급망에 한국 기업이 진출했지만 1만 7천여 개 섬으로 이뤄진 군도 국가다.',
+pro:['거대한 내수시장','니켈, 배터리 공급망','젊은 인구'],
+con:['섬나라(군도)','관료주의','외국인 직종 제한'],
+visa:'KITAS(취업 체류), 골든비자.'},
+{c:'PH',n:'필리핀',en:'Philippines',r:'아시아',pop:116,a:29,o:6,gov:'대통령제',reg:'민주주의',pol:4,gii:52,gpi:102,war:3,safe:2,open:5,job:1,pow:1,br:2,ve:5,isl:1,weu:0,no:0,
+feat:'영어가 공용어이고 미국과 동맹이지만 군도 국가다. 남중국해에서 중국과 충돌이 잦다.',
+pro:['영어 공용어','미국과 문화적 연결','친한 정서'],
+con:['섬나라','남중국해 분쟁','치안, 일자리 수준'],
+visa:'취업비자(9G), SRRV 은퇴비자.'},
+{c:'KZ',n:'카자흐스탄',en:'Kazakhstan',r:'중앙아시아',pop:20.6,a:29,o:8.5,gov:'대통령제',reg:'권위주의',pol:1,gii:73,gpi:44,war:2,safe:4,open:4,job:2,pow:2,br:1,ve:5,isl:0,weu:0,no:0,
+feat:'자원 부국이자 중앙아시아 1위 경제. 고려인 약 10만 명이 살아 한국에 친숙하지만 러시아 의존도가 높다.',
+pro:['고려인 공동체, 한국 친화','자원, 에너지 산업','무비자 입국'],
+con:['러시아 의존','권위주의','고급 일자리 부족'],
+visa:'무비자 30일, 취업허가.'},
+{c:'UZ',n:'우즈베키스탄',en:'Uzbekistan',r:'중앙아시아',pop:37,a:30,o:5.5,gov:'대통령제',reg:'권위주의',pol:1,gii:77,gpi:37,war:1,safe:4,open:4,job:1,pow:1,br:1,ve:5,isl:0,weu:0,no:0,
+feat:'인구가 젊고 개혁, 개방 이후 높은 성장을 이어가고 있다. 고려인 사회가 있지만 임금, 일자리 수준은 아직 낮다.',
+pro:['젊은 인구와 빠른 성장','고려인 공동체','평화지수 37위'],
+con:['임금 수준 낮음','권위주의','내륙국 물류 한계'],
+visa:'무비자 30일, 취업허가.'},
+{c:'ZA',n:'남아프리카공화국',en:'South Africa',r:'아프리카',pop:64,a:27.5,o:6.5,gov:'의원내각제',reg:'민주주의',pol:3,gii:63,gpi:123,war:1,safe:1,open:2,job:2,pow:2,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'아프리카에서 금융, 산업이 가장 발달한 나라지만 살인율이 세계 최상위권이고 실업률이 30%를 넘는다.',
+pro:['아프리카 최대 금융시장','영어권','자원 산업'],
+con:['치안 매우 나쁨','높은 실업률','외국인 혐오 폭력 사례'],
+visa:'핵심기술 취업비자.'},
+{c:'EG',n:'이집트',en:'Egypt',r:'아프리카',pop:118,a:32,o:5,gov:'대통령제',reg:'권위주의',pol:1,gii:83,gpi:113,war:3,safe:3,open:3,job:1,pow:2,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'인구 1억 2천만의 중동, 북아프리카 대국. 가자, 수단 분쟁과 맞닿아 있고 통화 위기가 반복된다.',
+pro:['큰 인구와 수에즈 물류','생활비가 낮음','관광 산업'],
+con:['통화 위기','주변 분쟁','외국인 고급 일자리 부족'],
+visa:'취업허가, 도착비자.'},
+{c:'MA',n:'모로코',en:'Morocco',r:'아프리카',pop:38,a:25.5,o:8.5,gov:'입헌군주제',reg:'혼합',pol:2,gii:54,gpi:65,war:1,safe:3,open:3,job:2,pow:1,br:1,ve:5,isl:0,weu:0,no:0,
+feat:'스페인과 14km 거리의 아프리카 제조 허브. 자동차 수출이 크게 늘었고 2030 월드컵을 공동 개최한다.',
+pro:['유럽과 붙은 제조, 물류 거점','혁신지수 54위로 아프리카 상위','한국인 무비자 90일'],
+con:['임금 수준 낮음','프랑스어, 아랍어 필요','청년 실업'],
+visa:'무비자 90일, 취업 계약 기반 거주증.'},
+{c:'KE',n:'케냐',en:'Kenya',r:'아프리카',pop:56,a:37,o:3,gov:'대통령제',reg:'혼합',pol:4,gii:97,gpi:132,war:2,safe:2,open:4,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'모바일 결제로 유명한 동아프리카 테크 허브. 인구가 매우 젊고(유소년 37%) 치안과 정치 시위가 불안 요소다.',
+pro:['동아프리카 테크 허브','영어권','젊은 인구'],
+con:['인구가 지나치게 젊음(피라미드형)','치안 나쁨','정치 시위'],
+visa:'전자여행허가(eTA), 취업허가(Class D).'},
+{c:'NG',n:'나이지리아',en:'Nigeria',r:'아프리카',pop:230,a:42,o:3,gov:'연방 대통령제',reg:'혼합',pol:4,gii:118,gpi:142,war:4,safe:1,open:3,job:1,pow:2,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'아프리카 최대 인구국이자 핀테크 스타트업이 많지만, 무장세력 분쟁과 납치 위험이 크다.',
+pro:['아프리카 최대 시장','핀테크 생태계','영어권'],
+con:['치안 매우 나쁨','무장세력 분쟁','통화 불안'],
+visa:'취업비자(STR).'},
+{c:'RW',n:'르완다',en:'Rwanda',r:'아프리카',pop:14.3,a:38,o:3.5,gov:'대통령제',reg:'권위주의',pol:1,gii:96,gpi:114,war:3,safe:4,open:4,job:1,pow:1,br:1,ve:5,isl:0,weu:0,no:0,
+feat:'거리 치안과 행정 효율이 좋고 저소득국 혁신 1위지만, 시장이 작고 콩고민주공화국 분쟁에 얽혀 있다.',
+pro:['거리 치안, 행정 효율','저소득국 혁신 1위','창업 절차 간단'],
+con:['시장이 매우 작음','콩고 분쟁 연루','권위주의'],
+visa:'도착비자, 취업허가.'},
+{c:'GH',n:'가나',en:'Ghana',r:'아프리카',pop:35,a:36,o:4,gov:'대통령제',reg:'민주주의',pol:3,gii:101,gpi:76,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'서아프리카에서 정권 교체가 평화롭게 이뤄지는 안정적 민주국가. 금, 카카오가 주력이고 고급 일자리는 적다.',
+pro:['정치 안정','영어권','외국인에게 우호적'],
+con:['고급 일자리 부족','인구가 지나치게 젊음','인프라 부족'],
+visa:'취업 거주허가.'},
+{c:'AU',n:'호주',en:'Australia',r:'오세아니아',pop:27.4,a:17.5,o:17.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:2,gii:20,gpi:20,war:1,safe:4,open:4,job:4,pow:3,br:2,ve:4,isl:1,weu:0,no:0,
+feat:'자원, 교육, 서비스가 강하고 혁신지수 20위. 섬 대륙이라 섬나라로 분류했다.',
+pro:['높은 임금','워킹홀리데이 등 진입 쉬움','삶의 질'],
+con:['섬나라','시장이 미국보다 작음','주거비'],
+visa:'워킹홀리데이, 숙련 이민(482, 189).'},
+{c:'NZ',n:'뉴질랜드',en:'New Zealand',r:'오세아니아',pop:5.3,a:18,o:17,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:2,gii:24,gpi:2,war:1,safe:5,open:4,job:2,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'평화지수 2위로 세계에서 두 번째로 평화로운 나라지만, 섬나라에 시장이 작아 기준에서 빠진다.',
+pro:['평화지수 2위','삶의 질','워킹홀리데이'],
+con:['섬나라','시장이 작음','임금 수준'],
+visa:'워킹홀리데이, 숙련 이민.'}
+];
+
+D.push(
+{c:'HU',n:'헝가리',en:'Hungary',r:'유럽',pop:9.6,a:14.5,o:21,gov:'의원내각제',reg:'민주주의',pol:4,gii:36,gpi:15,war:2,safe:5,open:2,job:3,pow:2,br:2,ve:3,isl:0,weu:0,no:0,
+feat:'2026년 4월 총선에서 오르반 총리가 16년 만에 물러나고 친EU 성향의 마자르 정부가 들어섰다. 삼성SDI, SK온 배터리 공장이 모인 한국 배터리 산업의 유럽 거점이다.',
+pro:['평화지수 15위','삼성SDI, SK온 등 한국 배터리 기업 집적','정권 교체 후 EU와 관계 회복 기대'],
+con:['고령화(65세 이상 약 21%)','이민에 보수적인 사회 분위기','헝가리어 장벽'],
+visa:'취업허가 + 거주허가, 게스트워커 제도.'},
+{c:'SK',n:'슬로바키아',en:'Slovakia',r:'유럽',pop:5.4,a:15.5,o:18,gov:'의원내각제',reg:'민주주의',pol:5,gii:48,gpi:29,war:2,safe:4,open:2,job:3,pow:1,br:2,ve:3,isl:0,weu:0,no:0,
+feat:'1인당 자동차 생산 세계 최상위권 국가로 기아 질리나 공장이 있다. 친러 성향 정부를 두고 사회 갈등이 크다.',
+pro:['자동차 산업과 기아 공장','유로화, EU 회원국','치안 양호'],
+con:['정치 양극화가 매우 심함','외국인에 보수적','시장이 작음'],
+visa:'취업허가 + 임시거주, EU 블루카드.'},
+{c:'LT',n:'리투아니아',en:'Lithuania',r:'유럽',pop:2.9,a:15,o:21,gov:'준대통령제',reg:'민주주의',pol:3,gii:32,gpi:24,war:4,safe:4,open:3,job:3,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'핀테크 라이선스 허브로 성장했고 2026년 혁신지수 32위까지 올라왔다. 폴란드와 맞닿은 수바우키 회랑이 러시아 유사시 최대 급소로 꼽힌다.',
+pro:['혁신지수 32위로 상승세','핀테크, 스타트업 친화','영어 통용'],
+con:['러시아, 벨라루스 접경','인구 감소와 고령화','시장이 작음'],
+visa:'스타트업 비자, EU 블루카드.'},
+{c:'LV',n:'라트비아',en:'Latvia',r:'유럽',pop:1.85,a:15,o:21.5,gov:'의원내각제',reg:'민주주의',pol:3,gii:40,gpi:19,war:4,safe:4,open:2,job:2,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'2026년 처음으로 혁신지수 40위 안에 들었다. 인구의 4분의 1가량이 러시아계이고 러시아와 국경을 맞댄다.',
+pro:['평화지수 19위','혁신지수 40위 진입','유로화'],
+con:['러시아 접경','인구 감소','일자리 선택지 적음'],
+visa:'취업허가, 스타트업 비자.'},
+{c:'SI',n:'슬로베니아',en:'Slovenia',r:'유럽',pop:2.1,a:14.5,o:22,gov:'의원내각제',reg:'민주주의',pol:4,gii:35,gpi:4,war:1,safe:5,open:3,job:2,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'평화지수 세계 4위의 알프스 소국. 소득, 치안 수준이 높지만 인구 200만의 작은 시장이다.',
+pro:['평화지수 4위','소득 수준 높음','자연, 삶의 질'],
+con:['시장이 매우 작음','고령화','외국인 고급 일자리 적음'],
+visa:'단일 취업, 체류 허가.'},
+{c:'HR',n:'크로아티아',en:'Croatia',r:'유럽',pop:3.8,a:14,o:23.5,gov:'의원내각제',reg:'민주주의',pol:3,gii:46,gpi:23,war:1,safe:5,open:3,job:2,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'관광 중심 경제에 유로화, 솅겐에 가입했다. 젊은 층 유출로 고령화가 빠르다.',
+pro:['평화지수 23위','디지털 노마드 비자','유로화, 솅겐'],
+con:['관광 편중 경제','고령화(65세 이상 약 24%)','임금 낮음'],
+visa:'디지털 노마드 체류, 취업허가.'},
+{c:'BG',n:'불가리아',en:'Bulgaria',r:'유럽',pop:6.4,a:14,o:23.5,gov:'의원내각제',reg:'민주주의',pol:4,gii:37,gpi:26,war:2,safe:4,open:3,job:2,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'EU에서 소득이 가장 낮은 축이지만 IT 아웃소싱과 낮은 세율(법인세 10%)이 강점이다. 인구가 빠르게 줄고 있다.',
+pro:['낮은 세율과 생활비','IT 아웃소싱 산업','혁신지수 37위'],
+con:['인구 급감, 고령화','잦은 조기 총선','임금 낮음'],
+visa:'취업허가, EU 블루카드.'},
+{c:'RS',n:'세르비아',en:'Serbia',r:'유럽',pop:6.6,a:14.5,o:21.5,gov:'의원내각제',reg:'혼합',pol:5,gii:56,gpi:70,war:2,safe:4,open:3,job:2,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'중국, EU 투자가 모두 들어오는 발칸 제조 거점. 2024년 기차역 사고 이후 대규모 반정부 시위가 이어지고 있다.',
+pro:['생활비 낮음','제조업 투자 유입','한국인 무비자 90일'],
+con:['대규모 반정부 시위','EU 비회원','고령화'],
+visa:'단일 취업, 체류 허가.'},
+{c:'GR',n:'그리스',en:'Greece',r:'유럽',pop:10.3,a:13.5,o:23.5,gov:'의원내각제',reg:'민주주의',pol:3,gii:41,gpi:53,war:2,safe:4,open:3,job:2,pow:2,br:1,ve:4,isl:0,weu:1,no:0,
+feat:'재정위기를 벗어나 성장률이 EU 평균을 웃돌고 있지만 임금은 여전히 낮다. 남유럽이라 서유럽 제외 조건에 함께 묶었다.',
+pro:['경제 회복세','디지털 노마드 비자','해운 산업'],
+con:['낮은 임금','고령화','남유럽(서유럽 조건에 포함)'],
+visa:'디지털 노마드 비자, 골든비자.'},
+{c:'IT',n:'이탈리아',en:'Italy',r:'유럽',pop:59,a:12,o:24.5,gov:'의원내각제',reg:'민주주의',pol:4,gii:27,gpi:35,war:1,safe:4,open:2,job:2,pow:3,br:1,ve:3,isl:0,weu:1,no:0,
+feat:'G7 제조업 강국이지만 유럽에서 가장 늙은 나라 중 하나이고 성장이 오래 정체됐다.',
+pro:['제조, 디자인 산업','혁신지수 27위','G7 경제'],
+con:['초고령(65세 이상 약 25%)','저성장, 저임금','서유럽에 속함'],
+visa:'쿼터제 취업비자(데크레토 플루시), 블루카드.'},
+{c:'ES',n:'스페인',en:'Spain',r:'유럽',pop:48.5,a:13.5,o:21,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:5,gii:28,gpi:27,war:1,safe:4,open:4,job:2,pow:3,br:1,ve:4,isl:0,weu:1,no:0,
+feat:'최근 몇 년간 유로존 대국 중 성장률이 가장 높았고 이민자 유입도 많다. 다만 청년 실업률이 높고 정치가 극단적으로 갈라져 있다.',
+pro:['성장률이 유로존 대국 중 최상위','외국인에게 개방적','디지털 노마드 비자'],
+con:['높은 청년 실업률','양극화','서유럽에 속함'],
+visa:'디지털 노마드 비자, 고숙련 비자.'},
+{c:'FR',n:'프랑스',en:'France',r:'유럽',pop:66.5,a:16.5,o:22,gov:'준대통령제',reg:'민주주의',pol:5,gii:13,gpi:99,war:2,safe:3,open:3,job:3,pow:4,br:2,ve:3,isl:0,weu:1,no:0,
+feat:'핵보유 강대국이자 AI 스타트업(미스트랄 등)이 성장 중인 나라. 연이은 내각 붕괴와 재정 적자로 정치가 불안하다.',
+pro:['강대국(핵, UN 상임이사국)','혁신지수 13위','AI 스타트업 육성'],
+con:['내각 붕괴가 잦은 정치 불안','평화지수 99위','서유럽에 속함'],
+visa:'탈랑(인재) 패스포트, 블루카드.'},
+{c:'NL',n:'네덜란드',en:'Netherlands',r:'유럽',pop:18,a:15.5,o:20.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:4,gii:7,gpi:17,war:1,safe:4,open:3,job:4,pow:2,br:2,ve:3,isl:0,weu:1,no:0,
+feat:'ASML이 있는 반도체 장비 강국이자 유럽 물류 관문(로테르담). 혁신지수 7위지만 서유럽 조건에 걸린다.',
+pro:['혁신지수 7위, ASML','유럽 최대 항만 물류','영어 통용'],
+con:['주거난','이민 규제 강화','서유럽에 속함'],
+visa:'고숙련 이주자(HSM) 비자, 구직 비자.'},
+{c:'IE',n:'아일랜드',en:'Ireland',r:'유럽',pop:5.3,a:19,o:15.5,gov:'의원내각제',reg:'민주주의',pol:2,gii:19,gpi:5,war:1,safe:4,open:4,job:4,pow:1,br:3,ve:4,isl:1,weu:1,no:0,
+feat:'구글, 애플, 메타 등 미국 빅테크의 유럽 본사가 모인 나라로 미국 회사 경력을 쌓기 좋다. 다만 섬나라이자 서유럽이다.',
+pro:['미국 빅테크 유럽 본사 집중','평화지수 5위','워킹홀리데이'],
+con:['섬나라이자 서유럽','극심한 주거난','물가 높음'],
+visa:'핵심기술 취업허가, 워킹홀리데이.'},
+{c:'AT',n:'오스트리아',en:'Austria',r:'유럽',pop:9.2,a:14.5,o:20,gov:'연방 의원내각제',reg:'민주주의',pol:4,gii:18,gpi:6,war:1,safe:5,open:2,job:3,pow:2,br:1,ve:3,isl:0,weu:1,no:0,
+feat:'평화지수 6위, 혁신지수 18위의 중부 유럽 부국. 이민 문제로 극우 정당 지지가 높다.',
+pro:['평화지수 6위','혁신지수 18위','삶의 질 최상위권'],
+con:['이민에 보수적','독일어 필수','서유럽에 속함'],
+visa:'적-백-적 카드(점수제).'},
+{c:'SE',n:'스웨덴',en:'Sweden',r:'유럽',pop:10.6,a:17,o:20.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:3,gii:2,gpi:40,war:2,safe:3,open:3,job:4,pow:2,br:2,ve:3,isl:0,weu:0,no:0,
+feat:'혁신지수 세계 2위로 스포티파이 같은 테크 기업이 나온 북유럽 국가. 북유럽이라 서유럽 조건엔 걸리지 않지만 갱단 총기 범죄가 늘어 평화지수는 40위다.',
+pro:['혁신지수 2위','유니콘 스타트업 생태계','영어 통용'],
+con:['갱단 총기 범죄 증가','고령화','이민 규제 강화'],
+visa:'취업허가(고용주 스폰서).'},
+{c:'NO',n:'노르웨이',en:'Norway',r:'유럽',pop:5.6,a:16.5,o:18.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:2,gii:21,gpi:33,war:2,safe:5,open:3,job:3,pow:2,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'세계 최대 국부펀드를 가진 에너지 부국. 임금은 최상위권이지만 물가도 그만큼 높다.',
+pro:['세계 최대 국부펀드','고임금','치안 최상급'],
+con:['물가 매우 높음','시장이 작음','노르웨이어 필요'],
+visa:'숙련 노동자 체류허가.'},
+{c:'FI',n:'핀란드',en:'Finland',r:'유럽',pop:5.6,a:14.5,o:24,gov:'의원내각제',reg:'민주주의',pol:3,gii:8,gpi:9,war:3,safe:5,open:2,job:3,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'혁신지수 8위, 평화지수 9위. 하지만 러시아와 1,300km 넘게 국경을 맞대고 있고 유럽에서 가장 늙은 나라 중 하나다.',
+pro:['혁신지수 8위','평화지수 9위','교육, 삶의 질'],
+con:['러시아 장거리 국경','초고령(65세 이상 약 24%)','외국인 고용 시장 좁음'],
+visa:'전문가 체류허가, 스타트업 허가.'},
+{c:'DK',n:'덴마크',en:'Denmark',r:'유럽',pop:6,a:16,o:20.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:2,gii:9,gpi:11,war:2,safe:5,open:2,job:4,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'노보 노디스크 같은 바이오 기업이 있는 혁신지수 9위 국가. 유럽에서 이민 정책이 가장 엄격한 편이다.',
+pro:['혁신지수 9위','평화지수 11위','바이오, 해운 산업'],
+con:['엄격한 이민 정책','물가 높음','시장이 작음'],
+visa:'급여 한도 제도(Pay Limit), 긍정 목록.'},
+{c:'BE',n:'벨기에',en:'Belgium',r:'유럽',pop:11.8,a:16,o:20,gov:'연방 의원내각제(입헌군주제)',reg:'민주주의',pol:4,gii:22,gpi:21,war:1,safe:3,open:3,job:3,pow:2,br:1,ve:3,isl:0,weu:1,no:0,
+feat:'EU, NATO 본부가 있는 브뤼셀의 나라. 언어권별로 정치가 갈라져 연정 구성이 늘 오래 걸린다.',
+pro:['EU, 국제기구 일자리','유럽 물류 중심(안트베르펜)','혁신지수 22위'],
+con:['언어권 분열 정치','세금 부담 큼','서유럽에 속함'],
+visa:'단일 허가, EU 블루카드.'},
+{c:'UA',n:'우크라이나',en:'Ukraine',r:'유럽',pop:33,a:15,o:19,gov:'준대통령제(계엄 중)',reg:'민주주의',pol:3,gii:67,gpi:160,war:5,safe:2,open:3,job:1,pow:2,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'2022년부터 러시아와 전쟁 중이다. IT 인력은 뛰어나지만 한국 정부의 여행금지국이다.',
+pro:['우수한 IT 인력','전후 재건 수요','EU 가입 추진'],
+con:['전쟁 중(한국 정부 여행금지)','인구 급감','계엄 상태'],
+visa:'여행금지국(예외 허가 필요).'},
+{c:'RU',n:'러시아',en:'Russia',r:'유럽',pop:144,a:17,o:17.5,gov:'대통령제',reg:'권위주의',pol:1,gii:58,gpi:163,war:5,safe:3,open:1,job:1,pow:4,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'핵 강대국이지만 우크라이나 전쟁으로 평화지수 163개국 중 꼴찌이고 서방 제재로 경제가 고립됐다.',
+pro:['자원 대국','국력(핵 강대국)','고려인 공동체'],
+con:['전쟁 당사국, 평화지수 꼴찌','서방 제재와 금융 고립','권위주의, 표현의 자유 제한'],
+visa:'고급 전문가 취업비자(제재로 송금 제약).'},
+{c:'AM',n:'아르메니아',en:'Armenia',r:'유럽',pop:3,a:20,o:15,gov:'의원내각제',reg:'혼합',pol:4,gii:59,gpi:51,war:3,safe:4,open:4,job:2,pow:1,br:1,ve:5,isl:0,weu:0,no:0,
+feat:'IT 산업이 빠르게 큰 캅카스 국가. 2025년 아제르바이잔과 평화 합의를 맺었지만 아직 안착 단계다.',
+pro:['IT 산업 성장','한국인 무비자 장기 체류','생활비 낮음'],
+con:['아제르바이잔과의 긴장','러시아 영향력','시장이 작음'],
+visa:'무비자 입국 후 거주허가.'},
+{c:'AZ',n:'아제르바이잔',en:'Azerbaijan',r:'유럽',pop:10.2,a:22,o:8,gov:'대통령제',reg:'권위주의',pol:1,gii:85,gpi:110,war:3,safe:4,open:3,job:2,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'카스피해 석유, 가스 수출국. 2023년 나고르노카라바흐를 되찾았고 2025년 아르메니아와 평화 합의를 맺었다.',
+pro:['에너지 산업','항아리형 인구','치안 양호'],
+con:['권위주의 체제','석유 의존','평화지수 110위'],
+visa:'전자비자, 취업허가.'},
+{c:'JO',n:'요르단',en:'Jordan',r:'중동',pop:11.5,a:32,o:4,gov:'입헌군주제',reg:'권위주의',pol:2,gii:60,gpi:68,war:3,safe:4,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'분쟁 지역 한가운데서도 안정을 유지하는 중동의 완충국. 난민 수용 부담이 크고 실업률이 높다.',
+pro:['중동에서 드문 안정','치안 양호','영어 통용'],
+con:['높은 실업률','주변국 분쟁','젊은 인구 과다'],
+visa:'도착비자, 취업허가.'},
+{c:'IQ',n:'이라크',en:'Iraq',r:'중동',pop:46,a:37,o:3.5,gov:'연방 의원내각제',reg:'혼합',pol:4,gii:null,gpi:140,war:4,safe:2,open:2,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'석유 대국이지만 친이란 민병대가 활동하고 미군 기지가 있어 이란 전쟁의 파장을 직접 받는다. 한국 정부는 대부분 지역을 여행금지로 묶어 두었다.',
+pro:['석유 산업','재건 건설 수요','젊은 인구'],
+con:['한국 정부 여행금지(대부분 지역)','민병대, 전쟁 리스크','부패'],
+visa:'여행금지국(예외 허가 필요).'},
+{c:'IR',n:'이란',en:'Iran',r:'중동',pop:92,a:22.5,o:8,gov:'신정 공화국',reg:'권위주의',pol:2,gii:81,gpi:144,war:5,safe:2,open:1,job:1,pow:3,br:1,ve:1,isl:0,weu:0,no:0,
+feat:'2026년 2월 말 시작된 미국, 이스라엘과의 전쟁 당사국이다. 11월에도 추가 공습 가능성이 거론될 만큼 긴장이 이어지고 있다.',
+pro:['인구 규모','교육 수준','자원'],
+con:['전쟁 당사국','국제 제재','외국인 거주가 사실상 불가'],
+visa:'여행 자제, 금지 수준.'},
+{c:'KH',n:'캄보디아',en:'Cambodia',r:'아시아',pop:17.6,a:29,o:6,gov:'입헌군주제(1당 우위)',reg:'권위주의',pol:1,gii:93,gpi:96,war:3,safe:2,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'봉제, 관광 중심의 젊은 나라. 2025년 한국인 대상 취업 사기, 감금 사건이 이어져 일부 지역에 여행금지가 내려졌고, 태국과 국경 충돌도 있었다.',
+pro:['젊은 인구','달러 통용','생활비 낮음'],
+con:['취업 사기, 감금 범죄','권위주의','고급 일자리 부족'],
+visa:'전자비자, 사업비자(EB).'},
+{c:'BD',n:'방글라데시',en:'Bangladesh',r:'아시아',pop:175,a:26,o:6.5,gov:'의원내각제',reg:'혼합',pol:4,gii:105,gpi:117,war:2,safe:2,open:3,job:1,pow:2,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'세계 2위 의류 수출국. 2024년 학생 시위로 정권이 무너진 뒤 과도정부를 거쳐 2026년 총선을 치렀다.',
+pro:['의류 수출 산업','큰 인구','영원무역 등 한국 섬유 기업'],
+con:['정치 불안','인구 과밀, 홍수','치안, 인프라'],
+visa:'취업비자(E), 투자비자.'},
+{c:'PK',n:'파키스탄',en:'Pakistan',r:'아시아',pop:250,a:36,o:4.5,gov:'연방 의원내각제',reg:'혼합',pol:5,gii:95,gpi:152,war:4,safe:2,open:2,job:1,pow:3,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'핵보유국이지만 2025년 인도와 무력 충돌, 아프가니스탄 접경 교전을 겪었다. 군부 영향력이 크고 경제가 IMF 지원에 기대고 있다.',
+pro:['큰 내수시장','젊은 인구','영어 통용'],
+con:['인도, 아프간 국경 분쟁','테러 위험','경제 위기'],
+visa:'취업비자, 사업비자.'},
+{c:'LK',n:'스리랑카',en:'Sri Lanka',r:'아시아',pop:22,a:22.5,o:12,gov:'대통령제',reg:'민주주의',pol:3,gii:94,gpi:67,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'2022년 국가부도 이후 IMF 구조조정으로 회복 중인 섬나라.',
+pro:['경제 회복 중','친한 정서','영어 통용'],
+con:['섬나라','임금 낮음','부채 부담'],
+visa:'전자여행허가(ETA), 취업비자.'},
+{c:'MN',n:'몽골',en:'Mongolia',r:'아시아',pop:3.5,a:31,o:5,gov:'준대통령제',reg:'민주주의',pol:3,gii:72,gpi:34,war:1,safe:3,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'중국, 러시아 사이의 민주국가로 구리, 석탄 광업이 경제의 중심이다. 한류 영향으로 한국에 대한 호감이 높다.',
+pro:['한국 호감도 높음','광물 자원','평화지수 34위'],
+con:['광업 편중','혹한, 대기오염','시장이 작음'],
+visa:'취업비자(단기 무비자 시행 여부는 출국 전 확인).'},
+{c:'BN',n:'브루나이',en:'Brunei',r:'아시아',pop:0.46,a:21,o:7,gov:'절대군주제(술탄)',reg:'권위주의',pol:1,gii:98,gpi:null,war:1,safe:5,open:2,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'보르네오섬의 석유 부국. 소득세가 없지만 샤리아 형법을 시행하고 시장이 매우 작다.',
+pro:['치안 최상급','소득세 없음','석유 부국'],
+con:['섬나라(보르네오)','샤리아 형법','일자리 극소'],
+visa:'취업허가(고용주 신청).'},
+{c:'KG',n:'키르기스스탄',en:'Kyrgyzstan',r:'중앙아시아',pop:7.2,a:32,o:5.5,gov:'대통령제',reg:'권위주의',pol:2,gii:92,gpi:61,war:2,safe:3,open:4,job:1,pow:1,br:1,ve:5,isl:0,weu:0,no:0,
+feat:'중앙아시아의 산악 국가. 2025년 타지키스탄과 국경 협정을 맺어 분쟁 위험이 줄었고, 러시아 송금 의존이 크다.',
+pro:['한국인 무비자','생활비 매우 낮음','고려인 공동체'],
+con:['임금 낮음','권위주의화','러시아 송금 의존'],
+visa:'무비자 60일, 취업허가.'},
+{c:'NP',n:'네팔',en:'Nepal',r:'아시아',pop:30,a:27,o:6.5,gov:'연방 의원내각제',reg:'혼합',pol:4,gii:104,gpi:111,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'2025년 9월 청년층 시위로 정부가 무너지고 2026년 총선을 치렀다. 해외 송금과 관광이 경제의 중심이다.',
+pro:['친한 정서(고용허가제 인력)','관광','젊은 인구'],
+con:['정치 불안','일자리 부족','내륙국'],
+visa:'도착비자, 취업비자.'},
+{c:'EC',n:'에콰도르',en:'Ecuador',r:'중남미',pop:18,a:25,o:8.5,gov:'대통령제',reg:'민주주의',pol:4,gii:106,gpi:135,war:3,safe:1,open:3,job:1,pow:1,br:1,ve:5,isl:0,weu:0,no:0,
+feat:'달러를 쓰지만 마약 조직 폭력이 폭증해 정부가 2024년 국내 무력분쟁 상태를 선언했다.',
+pro:['달러 경제','한국인 무비자 90일','생활비 낮음'],
+con:['치안 매우 나쁨','무장조직 분쟁','일자리 부족'],
+visa:'무비자 90일, 디지털 노마드 비자.'},
+{c:'PY',n:'파라과이',en:'Paraguay',r:'중남미',pop:7,a:27,o:7,gov:'대통령제',reg:'민주주의',pol:3,gii:109,gpi:64,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'낮은 세율(소득세 10%)과 쉬운 영주권으로 알려진 나라. 아순시온에 한인 사회가 있다.',
+pro:['쉬운 영주권','낮은 세율','한인 공동체'],
+con:['일자리 부족','내륙국','부패'],
+visa:'임시, 영주 거주(소득, 투자 증빙).'},
+{c:'BO',n:'볼리비아',en:'Bolivia',r:'중남미',pop:12.4,a:29,o:6.5,gov:'대통령제',reg:'혼합',pol:5,gii:114,gpi:92,war:1,safe:3,open:3,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'리튬 매장량이 세계 최대급. 2025년 대선으로 약 20년에 걸친 사회주의당 집권이 끝났지만 외환 위기가 심하다.',
+pro:['리튬 자원','정권 교체 후 개방 기대','젊은 인구'],
+con:['외환, 연료 위기','정치 양극화','내륙 고산지대'],
+visa:'취업 거주허가.'},
+{c:'DO',n:'도미니카공화국',en:'Dominican Republic',r:'중남미',pop:11.4,a:26,o:8,gov:'대통령제',reg:'민주주의',pol:2,gii:99,gpi:89,war:1,safe:3,open:4,job:2,pow:1,br:2,ve:4,isl:1,weu:0,no:0,
+feat:'카리브해에서 가장 빠르게 성장해 온 경제. 미국과 가깝지만 히스파니올라섬을 아이티와 나눠 쓰는 섬나라다.',
+pro:['카리브 최고 성장률','미국과 가까움','관광, 자유무역지대'],
+con:['섬나라','아이티 접경 불안','임금 낮음'],
+visa:'거주 비자(고용, 투자).'},
+{c:'GT',n:'과테말라',en:'Guatemala',r:'중남미',pop:18.4,a:31,o:5,gov:'대통령제',reg:'혼합',pol:4,gii:120,gpi:88,war:1,safe:2,open:3,job:1,pow:1,br:2,ve:4,isl:0,weu:0,no:0,
+feat:'중미 최대 경제로 한국 봉제 기업이 많이 진출해 있다. 갱단 범죄와 사법 독립성 문제가 있다.',
+pro:['한국 봉제 기업 진출','미국과 가까움','젊은 인구'],
+con:['갱단 범죄','부패, 사법 불안','임금 낮음'],
+visa:'취업 거주허가.'},
+{c:'VE',n:'베네수엘라',en:'Venezuela',r:'중남미',pop:28.5,a:25,o:9,gov:'대통령제(임시정부)',reg:'권위주의',pol:5,gii:127,gpi:133,war:3,safe:1,open:2,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'2026년 1월 미군 작전으로 마두로가 체포됐고, 로드리게스 임시정부가 3월 미국과 외교관계를 복원했다. 하지만 기존 권력 구조는 대부분 남아 있다.',
+pro:['세계 최대 석유 매장량','미국과 관계 복원','개방 기대'],
+con:['치안 매우 나쁨','정치 이행 불확실','경제 붕괴 후유증'],
+visa:'취업비자(제한적).'},
+{c:'SV',n:'엘살바도르',en:'El Salvador',r:'중남미',pop:6.3,a:24,o:9,gov:'대통령제',reg:'혼합',pol:3,gii:100,gpi:121,war:1,safe:4,open:3,job:1,pow:1,br:2,ve:4,isl:0,weu:0,no:0,
+feat:'부켈레 정부의 갱단 소탕으로 살인율이 급감했지만, 장기 비상사태와 대규모 수감으로 인권 논란이 크다.',
+pro:['살인율 급감','달러 경제','미국과 가까움'],
+con:['비상사태, 인권 논란','권력 집중','일자리 부족'],
+visa:'임시 거주, 투자 비자.'},
+{c:'TZ',n:'탄자니아',en:'Tanzania',r:'아프리카',pop:69,a:43,o:3,gov:'대통령제',reg:'혼합',pol:3,gii:119,gpi:98,war:1,safe:3,open:3,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'인구가 매우 빠르게 늘어나는 동아프리카 경제. 2025년 대선 직후 시위 유혈 진압으로 국제적 비판을 받았다.',
+pro:['빠른 성장','관광, 자원','동아프리카 물류'],
+con:['인구가 지나치게 젊음','선거 후 유혈 진압','인프라 부족'],
+visa:'전자비자, 취업허가.'},
+{c:'ET',n:'에티오피아',en:'Ethiopia',r:'아프리카',pop:132,a:39,o:3,gov:'연방 의원내각제',reg:'권위주의',pol:4,gii:133,gpi:138,war:4,safe:2,open:3,job:1,pow:2,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'아프리카 2위 인구 대국이지만 암하라, 오로미아 지역 무력 충돌과 에리트레아와의 긴장이 이어진다.',
+pro:['큰 인구','항공(에티오피아항공) 허브','성장 잠재력'],
+con:['내전, 지역 분쟁','외환 부족','치안'],
+visa:'전자비자, 취업허가.'},
+{c:'CI',n:'코트디부아르',en:"Côte d'Ivoire",r:'아프리카',pop:32,a:41,o:3,gov:'대통령제',reg:'혼합',pol:4,gii:110,gpi:93,war:2,safe:3,open:3,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'세계 최대 카카오 생산국이자 서아프리카에서 빠르게 성장하는 경제. 2025년 대통령 4선을 두고 갈등이 있었다.',
+pro:['빠른 성장','서아프리카 경제 중심','프랑스어권 허브'],
+con:['정치 갈등','인구가 지나치게 젊음','프랑스어 필수'],
+visa:'전자비자, 취업허가.'},
+{c:'SN',n:'세네갈',en:'Senegal',r:'아프리카',pop:18.5,a:41,o:3,gov:'대통령제',reg:'민주주의',pol:3,gii:90,gpi:75,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'쿠데타가 없었던 서아프리카의 대표적 민주국가. 해상 석유, 가스 생산이 막 시작됐지만 부채 문제가 불거졌다.',
+pro:['정치적 안정','석유, 가스 생산 시작','외국인에게 우호적'],
+con:['부채 위기','일자리 부족','프랑스어 필수'],
+visa:'무비자 입국, 거주허가.'},
+{c:'TN',n:'튀니지',en:'Tunisia',r:'아프리카',pop:12.3,a:24,o:10.5,gov:'대통령제',reg:'혼합',pol:4,gii:71,gpi:77,war:1,safe:3,open:2,job:1,pow:1,br:1,ve:5,isl:0,weu:0,no:0,
+feat:'아랍의 봄 발상지지만 2021년 이후 대통령에게 권력이 집중됐다. 사하라 이남 이주민에 대한 반감이 커졌다.',
+pro:['한국인 무비자 90일','유럽과 가까운 제조업','항아리형 인구'],
+con:['권력 집중','경제 침체','이주민 반감'],
+visa:'무비자 90일, 취업허가.'},
+{c:'DZ',n:'알제리',en:'Algeria',r:'아프리카',pop:47,a:30,o:6.5,gov:'대통령제',reg:'권위주의',pol:2,gii:111,gpi:91,war:2,safe:3,open:2,job:1,pow:2,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'아프리카 최대 면적의 가스 수출국. 국가 주도 경제라 외국인에게 폐쇄적이다.',
+pro:['에너지 자원','유럽 가스 공급국','큰 인구'],
+con:['폐쇄적 경제','관료주의','비자 발급 까다로움'],
+visa:'취업비자(고용주 초청).'},
+{c:'BW',n:'보츠와나',en:'Botswana',r:'아프리카',pop:2.5,a:32,o:5,gov:'의원내각제(간선 대통령)',reg:'민주주의',pol:2,gii:82,gpi:50,war:1,safe:3,open:3,job:1,pow:1,br:1,ve:5,isl:0,weu:0,no:0,
+feat:'아프리카에서 손꼽히는 안정적 민주국가로 2024년 독립 후 첫 정권 교체가 평화롭게 이뤄졌다. 다이아몬드 의존도가 높다.',
+pro:['정치 안정, 청렴','평화지수 50위','한국인 무비자'],
+con:['다이아몬드 의존','시장이 작음','실업률 높음'],
+visa:'무비자 입국, 취업, 거주허가.'},
+{c:'MU',n:'모리셔스',en:'Mauritius',r:'아프리카',pop:1.26,a:15.5,o:13.5,gov:'의원내각제',reg:'민주주의',pol:2,gii:50,gpi:18,war:1,safe:4,open:4,job:2,pow:1,br:1,ve:5,isl:1,weu:0,no:0,
+feat:'아프리카 혁신 1위권(혁신지수 50위)의 금융 허브이자 평화지수 18위. 인도양 섬나라다.',
+pro:['평화지수 18위','금융, 역외 허브','프리미엄 비자'],
+con:['섬나라','시장이 작음','고령화 시작'],
+visa:'프리미엄 비자, 직업 허가(OP).'}
+);
+D.push(
+{c:'LU',n:'룩셈부르크',en:'Luxembourg',r:'유럽',pop:0.67,a:16,o:15,gov:'입헌군주제(대공국), 의원내각제',reg:'민주주의',pol:2,gii:23,gpi:null,war:1,safe:5,open:4,job:4,pow:1,br:2,ve:3,isl:0,weu:1,no:0,
+feat:'1인당 소득이 세계 최상위인 금융과 펀드 산업의 중심지. 주민의 절반 가까이가 외국인이라 다국어 환경에 익숙하다.',
+pro:['세계 최상위 소득','외국인 비중이 매우 높음','EU 기관과 금융 일자리'],
+con:['주거비 매우 높음','시장이 작음','서유럽에 속함'],
+visa:'EU 블루카드, 고용 기반 체류허가.'},
+{c:'MT',n:'몰타',en:'Malta',r:'유럽',pop:0.55,a:13.5,o:20,gov:'의원내각제',reg:'민주주의',pol:3,gii:31,gpi:null,war:1,safe:4,open:3,job:3,pow:1,br:1,ve:4,isl:1,weu:1,no:0,
+feat:'영어가 공용어인 지중해 섬나라. 온라인 게임과 핀테크 기업이 몰려 있고 외국인 인구가 빠르게 늘었다.',
+pro:['영어 공용어','온라인 게임, 핀테크 일자리','디지털 노마드 비자'],
+con:['섬나라','인구 과밀과 주거비','남유럽(서유럽 조건에 포함)'],
+visa:'싱글 퍼밋, 노마드 레지던스 퍼밋.'},
+{c:'CY',n:'키프로스',en:'Cyprus',r:'유럽',pop:1.36,a:16,o:16,gov:'대통령제',reg:'민주주의',pol:3,gii:29,gpi:80,war:2,safe:4,open:3,job:3,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'해운과 IT 기업이 모인 동지중해 섬나라. 북부는 1974년 이후 분단 상태이고 중동 분쟁 지역과 가깝다.',
+pro:['해운, IT 기업 거점','낮은 법인세','영어 통용'],
+con:['섬나라','남북 분단','중동 분쟁과 가까움'],
+visa:'취업허가, 디지털 노마드 비자.'},
+{c:'IS',n:'아이슬란드',en:'Iceland',r:'유럽',pop:0.39,a:18,o:16,gov:'의원내각제',reg:'민주주의',pol:2,gii:26,gpi:1,war:1,safe:5,open:3,job:2,pow:1,br:1,ve:3,isl:1,weu:0,no:0,
+feat:'평화지수 세계 1위를 오래 지켜 온 나라. 지열 에너지와 관광이 강하지만 인구가 40만이 안 되는 섬나라다.',
+pro:['평화지수 세계 1위','혁신지수 26위','청정 에너지'],
+con:['섬나라','시장이 매우 작음','물가 매우 높음'],
+visa:'전문가 취업허가.'},
+{c:'MD',n:'몰도바',en:'Moldova',r:'유럽',pop:2.4,a:18,o:15,gov:'의원내각제',reg:'민주주의',pol:4,gii:68,gpi:55,war:3,safe:4,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'EU 가입을 추진하는 유럽 최빈국 중 하나. 2025년 총선에서 친EU 정당이 이겼지만 친러 분리 지역(트란스니스트리아)이 있다.',
+pro:['생활비 매우 낮음','EU 가입 추진','IT 아웃소싱'],
+con:['친러 분리 지역','인구 유출','임금 낮음'],
+visa:'무비자 입국, 취업 체류허가.'},
+{c:'MK',n:'북마케도니아',en:'North Macedonia',r:'유럽',pop:1.8,a:16,o:16,gov:'의원내각제',reg:'민주주의',pol:4,gii:61,gpi:46,war:1,safe:4,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'NATO 회원국이자 EU 가입 후보국. 자동차 부품 공장이 들어와 있지만 청년 유출이 심하다.',
+pro:['NATO 회원국','낮은 세율','생활비 낮음'],
+con:['청년 유출','EU 가입 지연','일자리 부족'],
+visa:'무비자 입국, 취업허가.'},
+{c:'AL',n:'알바니아',en:'Albania',r:'유럽',pop:2.7,a:15.5,o:17.5,gov:'의원내각제',reg:'민주주의',pol:4,gii:79,gpi:36,war:1,safe:4,open:4,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'관광이 빠르게 크는 발칸 국가. 외국인 장기 체류에 관대하지만 인구 유출로 노동력이 줄고 있다.',
+pro:['외국인에게 관대','생활비 낮음','관광 성장'],
+con:['인구 유출','부패','고급 일자리 부족'],
+visa:'무비자 입국, 취업 체류허가.'},
+{c:'BA',n:'보스니아 헤르체고비나',en:'Bosnia and Herzegovina',r:'유럽',pop:3.2,a:14.5,o:18,gov:'3인 공동 대통령 연방제',reg:'혼합',pol:5,gii:84,gpi:48,war:2,safe:4,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'1990년대 내전 이후 세 민족이 권력을 나눠 갖는 복잡한 체제. 세르비아계 지역의 분리 움직임이 반복된다.',
+pro:['생활비 낮음','자연환경','유럽 접근성'],
+con:['민족 분리 갈등','복잡한 행정','청년 유출'],
+visa:'무비자 입국, 취업허가.'},
+{c:'ME',n:'몬테네그로',en:'Montenegro',r:'유럽',pop:0.62,a:18,o:16,gov:'의원내각제',reg:'민주주의',pol:4,gii:76,gpi:30,war:1,safe:4,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'EU 가입 협상이 가장 앞선 발칸 국가로 유로를 쓴다. 관광 의존도가 높다.',
+pro:['EU 가입 협상 선두','유로 사용','평화지수 30위'],
+con:['관광 편중','시장이 매우 작음','계절성 일자리'],
+visa:'무비자 입국, 디지털 노마드 체류.'},
+{c:'BY',n:'벨라루스',en:'Belarus',r:'유럽',pop:9.1,a:16.5,o:17,gov:'대통령제',reg:'권위주의',pol:1,gii:88,gpi:115,war:4,safe:4,open:1,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'러시아의 최측근 동맹국으로 러시아 전술핵이 배치됐다. 우크라이나와 국경을 맞대고 서방 제재를 받는다.',
+pro:['거리 치안','IT 인력','생활비 낮음'],
+con:['러시아 전쟁 동맹','서방 제재','권위주의'],
+visa:'무비자 입국(공항 경유), 취업허가.'},
+{c:'XK',n:'코소보',en:'Kosovo',r:'유럽',pop:1.6,a:24,o:9,gov:'의원내각제',reg:'민주주의',pol:4,gii:null,gpi:54,war:2,safe:4,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'유럽에서 가장 젊은 나라 중 하나로 유로를 쓴다. 세르비아가 독립을 인정하지 않아 북부에서 긴장이 이어진다.',
+pro:['젊은 인구','유로 사용','친미 성향'],
+con:['세르비아와 긴장','국가 승인 문제','일자리 부족'],
+visa:'무비자 입국, 취업허가.'},
+{c:'MC',n:'모나코',en:'Monaco',r:'유럽',pop:0.04,a:12,o:35,gov:'입헌군주제',reg:'민주주의',pol:1,gii:null,gpi:null,war:1,safe:5,open:2,job:3,pow:1,br:1,ve:1,isl:0,weu:1,no:0,
+feat:'세계에서 가장 부유한 도시국가 중 하나. 소득세가 없지만 거주하려면 큰 재산을 증명해야 하고 주민이 매우 늙었다.',
+pro:['소득세 없음','치안 최상급','금융, 요트 산업'],
+con:['거주 문턱이 매우 높음','초고령','서유럽에 속함'],
+visa:'거주 카드(재산, 주거 증빙).'},
+{c:'LI',n:'리히텐슈타인',en:'Liechtenstein',r:'유럽',pop:0.04,a:15,o:20,gov:'입헌군주제',reg:'민주주의',pol:1,gii:null,gpi:null,war:1,safe:5,open:1,job:3,pow:1,br:1,ve:1,isl:0,weu:1,no:0,
+feat:'스위스와 오스트리아 사이의 초소국으로 정밀기계와 금융이 강하다. 외국인 거주 허가를 추첨으로 줄 만큼 문이 좁다.',
+pro:['고소득','치안 최상급','제조, 금융 강소국'],
+con:['거주 허가가 극히 제한적','시장이 매우 작음','서유럽에 속함'],
+visa:'거주 허가 쿼터(추첨).'},
+{c:'AD',n:'안도라',en:'Andorra',r:'유럽',pop:0.08,a:12.5,o:16,gov:'공동 군주제, 의원내각제',reg:'민주주의',pol:2,gii:null,gpi:null,war:1,safe:5,open:2,job:2,pow:1,br:1,ve:2,isl:0,weu:1,no:0,
+feat:'피레네산맥의 초소국으로 세율이 낮아 유튜버와 원격 근무자가 많이 옮겨 왔다. 취업 기회는 관광과 소매에 몰려 있다.',
+pro:['낮은 세율','치안 최상급','자연환경'],
+con:['일자리가 관광에 편중','거주 요건','서유럽에 속함'],
+visa:'능동 거주(취업), 수동 거주(투자).'},
+{c:'LB',n:'레바논',en:'Lebanon',r:'중동',pop:5.8,a:26,o:9,gov:'종파 배분 의원내각제',reg:'혼합',pol:5,gii:86,gpi:131,war:4,safe:3,open:2,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'교육 수준이 높고 해외 교민망이 넓지만, 2019년 금융 붕괴와 이스라엘과의 충돌로 경제가 무너졌다.',
+pro:['높은 교육 수준','넓은 해외 교민망','지중해 생활'],
+con:['이스라엘과 무력 충돌','금융 붕괴','종파 갈등'],
+visa:'여행 경보 확인 필수, 취업허가.'},
+{c:'TM',n:'투르크메니스탄',en:'Turkmenistan',r:'중앙아시아',pop:7.4,a:30,o:5.5,gov:'대통령제(부자 승계)',reg:'권위주의',pol:1,gii:null,gpi:66,war:1,safe:4,open:1,job:1,pow:1,br:1,ve:1,isl:0,weu:0,no:0,
+feat:'세계 4위권 천연가스 매장국이지만 북한 다음으로 폐쇄적인 나라로 꼽힌다. 인터넷과 외국인 출입이 강하게 통제된다.',
+pro:['천연가스 자원','거리 치안','한국 건설사 플랜트 수주'],
+con:['극도로 폐쇄적','인터넷 통제','비자 발급 매우 어려움'],
+visa:'초청장 기반 비자(발급 매우 까다로움).'},
+{c:'TJ',n:'타지키스탄',en:'Tajikistan',r:'중앙아시아',pop:10.6,a:36,o:3.5,gov:'대통령제',reg:'권위주의',pol:1,gii:112,gpi:47,war:2,safe:4,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'중앙아시아에서 가장 젊고 가난한 나라. 경제가 러시아에서 일하는 노동자의 송금에 크게 기댄다.',
+pro:['젊은 인구','수력 자원','전자비자'],
+con:['러시아 송금 의존','아프간 국경','고급 일자리 부족'],
+visa:'전자비자, 취업허가.'},
+{c:'LA',n:'라오스',en:'Laos',r:'아시아',pop:7.8,a:30,o:5,gov:'공산당 일당제',reg:'권위주의',pol:1,gii:108,gpi:58,war:1,safe:3,open:3,job:1,pow:1,br:1,ve:5,isl:0,weu:0,no:0,
+feat:'중국-라오스 철도가 개통된 내륙국. 중국 차관으로 부채가 쌓이면서 물가와 환율 불안이 크다.',
+pro:['한국인 무비자 입국','생활비 낮음','관광'],
+con:['부채와 물가 불안','일자리 부족','내륙국'],
+visa:'무비자 입국, 취업비자.'},
+{c:'BT',n:'부탄',en:'Bhutan',r:'아시아',pop:0.79,a:21,o:7,gov:'입헌군주제',reg:'민주주의',pol:1,gii:74,gpi:16,war:1,safe:5,open:1,job:1,pow:1,br:1,ve:1,isl:0,weu:0,no:0,
+feat:'국민총행복을 내세우는 히말라야 왕국으로 평화지수 16위. 외국인 정착은 사실상 열려 있지 않다.',
+pro:['평화지수 16위','치안 최상급','자연환경'],
+con:['외국인 정착이 사실상 불가','시장이 매우 작음','청년 해외 유출'],
+visa:'관광은 일일 체류세 납부, 취업은 극히 제한.'},
+{c:'HN',n:'온두라스',en:'Honduras',r:'중남미',pop:10.8,a:29,o:5.5,gov:'대통령제',reg:'혼합',pol:5,gii:116,gpi:97,war:1,safe:1,open:3,job:1,pow:1,br:2,ve:4,isl:0,weu:0,no:0,
+feat:'한국 봉제 기업이 많이 진출한 중미 국가지만 살인율이 세계 최고 수준이다. 2025년 대선 개표를 두고 큰 논란이 있었다.',
+pro:['한국 봉제 기업 진출','미국과 가까움','젊은 인구'],
+con:['치안 매우 나쁨','선거 갈등','빈곤'],
+visa:'무비자 입국, 취업 거주허가.'},
+{c:'NI',n:'니카라과',en:'Nicaragua',r:'중남미',pop:7,a:28,o:6,gov:'대통령제(부부 공동 대통령)',reg:'권위주의',pol:1,gii:124,gpi:106,war:1,safe:3,open:1,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'오르테가 부부가 공동 대통령으로 권력을 쥔 권위주의 국가. 비판 세력의 국적을 박탈할 만큼 통제가 강하다.',
+pro:['생활비 낮음','자연환경','젊은 인구'],
+con:['강한 권위주의','언론, 종교 탄압','투자 위험'],
+visa:'입국 시 관광카드, 거주허가.'},
+{c:'BZ',n:'벨리즈',en:'Belize',r:'중남미',pop:0.42,a:26,o:6,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:2,gii:null,gpi:null,war:1,safe:2,open:4,job:1,pow:1,br:2,ve:4,isl:0,weu:0,no:0,
+feat:'중미에서 유일하게 영어가 공용어인 나라. 관광과 은퇴 이민이 많지만 도시 범죄율이 높다.',
+pro:['영어 공용어','미국과 가까움','은퇴 이민 제도'],
+con:['도시 범죄율 높음','시장이 매우 작음','일자리 부족'],
+visa:'입국 비자 요건 확인 필요, 영주 거주 프로그램.'},
+{c:'GY',n:'가이아나',en:'Guyana',r:'중남미',pop:0.83,a:27,o:7,gov:'대통령제',reg:'민주주의',pol:4,gii:null,gpi:103,war:3,safe:2,open:4,job:3,pow:1,br:2,ve:4,isl:0,weu:0,no:0,
+feat:'해상 유전 개발로 몇 년째 세계 최고 수준의 성장률을 기록한 영어권 나라. 베네수엘라가 국토 3분의 2(에세키보)의 영유권을 주장한다.',
+pro:['석유 붐으로 일자리 급증','영어 공용어','외국인 인력 수요'],
+con:['베네수엘라 영토 분쟁','치안 나쁨','인프라 부족'],
+visa:'입국 비자 요건 확인 필요, 취업허가.'},
+{c:'SR',n:'수리남',en:'Suriname',r:'중남미',pop:0.63,a:25,o:8,gov:'대통령제',reg:'민주주의',pol:3,gii:null,gpi:null,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'네덜란드어를 쓰는 남미 북부의 작은 나라. 해상 유전 개발이 시작돼 2028년 무렵 석유 수출이 기대된다.',
+pro:['석유 개발 기대','다민족 사회','외국인에게 관대'],
+con:['시장이 매우 작음','네덜란드어 필요','통화 불안'],
+visa:'전자관광카드, 취업허가.'},
+{c:'ZM',n:'잠비아',en:'Zambia',r:'아프리카',pop:21,a:42,o:2.5,gov:'대통령제',reg:'혼합',pol:3,gii:115,gpi:82,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'구리 생산 아프리카 2위 국가. 2020년 국가부도 이후 채무 재조정을 마치고 회복 중이다.',
+pro:['구리 자원','한국인 무비자 입국','정치 안정'],
+con:['인구가 지나치게 젊음','전력난','고급 일자리 부족'],
+visa:'무비자 입국, 취업허가.'},
+{c:'UG',n:'우간다',en:'Uganda',r:'아프리카',pop:50,a:44,o:2,gov:'대통령제',reg:'권위주의',pol:3,gii:123,gpi:130,war:2,safe:2,open:4,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'세계에서 가장 젊은 나라 중 하나이자 아프리카 최대 난민 수용국. 1986년부터 같은 대통령이 집권하고 있다.',
+pro:['젊은 인구','석유 개발 시작','난민 포용 정책'],
+con:['장기 집권','인구가 지나치게 젊음','치안'],
+visa:'전자비자, 취업허가.'},
+{c:'AO',n:'앙골라',en:'Angola',r:'아프리카',pop:38,a:45,o:2.5,gov:'대통령제',reg:'권위주의',pol:3,gii:136,gpi:78,war:1,safe:2,open:2,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'아프리카 주요 산유국이지만 석유 수익이 소수에 몰려 빈곤율이 높다. 2024년 OPEC을 탈퇴했다.',
+pro:['석유 자원','한국인 무비자 입국','포르투갈어권'],
+con:['석유 의존과 빈부 격차','물가','치안'],
+visa:'무비자 입국, 취업비자.'},
+{c:'CM',n:'카메룬',en:'Cameroon',r:'아프리카',pop:29,a:42,o:3,gov:'대통령제',reg:'권위주의',pol:4,gii:121,gpi:137,war:3,safe:2,open:2,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'90대 대통령이 40년 넘게 집권하고 있다. 영어권 지역 분리 분쟁과 북부의 보코하람 공격이 이어진다.',
+pro:['농업, 목재 자원','영어와 프랑스어 병용','중부 아프리카 물류'],
+con:['영어권 분리 분쟁','장기 집권','치안'],
+visa:'전자비자, 취업허가.'},
+{c:'MZ',n:'모잠비크',en:'Mozambique',r:'아프리카',pop:35,a:43,o:3,gov:'대통령제',reg:'혼합',pol:4,gii:129,gpi:126,war:3,safe:2,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'대형 LNG 개발 사업에 한국 조선사도 참여했지만, 북부 카보델가두의 무장 반군 활동과 2024년 선거 후 유혈 시위가 있었다.',
+pro:['LNG 자원','긴 해안선','무비자 입국'],
+con:['북부 무장 반군','선거 후 유혈 사태','빈곤'],
+visa:'단기 무비자 대상인지 확인 필요, 취업허가.'},
+{c:'ZW',n:'짐바브웨',en:'Zimbabwe',r:'아프리카',pop:16.9,a:40,o:3.5,gov:'대통령제',reg:'권위주의',pol:3,gii:132,gpi:90,war:1,safe:3,open:3,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'광물 자원이 풍부하지만 초인플레이션과 통화 교체를 여러 번 겪었다. 2024년 금 연동 통화(ZiG)를 새로 도입했다.',
+pro:['리튬 등 광물 자원','높은 영어 사용률','관광'],
+con:['통화 불안','권위주의','일자리 부족'],
+visa:'도착비자, 취업허가.'},
+{c:'NA',n:'나미비아',en:'Namibia',r:'아프리카',pop:3,a:35,o:4,gov:'대통령제',reg:'민주주의',pol:2,gii:102,gpi:63,war:1,safe:3,open:3,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'정치가 안정된 남부 아프리카 국가로 그린 수소와 해상 유전 개발이 기대를 모은다. 2025년 첫 여성 대통령이 취임했다.',
+pro:['정치 안정','그린 수소, 석유 기대','평화지수 63위'],
+con:['인구가 적고 분산','실업률 높음','비자 요건 확인 필요'],
+visa:'입국 비자 요건 확인 필요, 취업허가.'},
+{c:'MW',n:'말라위',en:'Malawi',r:'아프리카',pop:21.5,a:41,o:3,gov:'대통령제',reg:'민주주의',pol:3,gii:126,gpi:83,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'평화로운 정권 교체가 이어지는 나라지만 세계 최빈국 중 하나다. 외화 부족과 식량 위기가 반복된다.',
+pro:['정치적 평화','외국인에게 우호적','영어 공용어'],
+con:['최빈국 수준 소득','외화 부족','일자리 부족'],
+visa:'전자비자, 취업허가.'},
+{c:'GA',n:'가봉',en:'Gabon',r:'아프리카',pop:2.5,a:36,o:4,gov:'대통령제',reg:'권위주의',pol:2,gii:null,gpi:100,war:1,safe:3,open:3,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'석유와 망간 수출국. 2023년 쿠데타 이후 2025년 대선에서 쿠데타를 이끈 군 지도자가 대통령으로 뽑혔다.',
+pro:['석유, 망간 자원','아프리카 평균보다 높은 소득','열대우림'],
+con:['쿠데타 이후 군 출신 집권','석유 의존','프랑스어 필요'],
+visa:'전자비자, 취업허가.'},
+{c:'CG',n:'콩고공화국',en:'Republic of the Congo',r:'아프리카',pop:6.3,a:40,o:3,gov:'대통령제',reg:'권위주의',pol:2,gii:null,gpi:120,war:1,safe:2,open:2,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'석유 수출에 기대는 중부 아프리카 국가로 같은 대통령이 수십 년째 집권하고 있다. 이웃 콩고민주공화국과는 다른 나라다.',
+pro:['석유 자원','열대우림','프랑스어권'],
+con:['장기 집권','부채 부담','치안'],
+visa:'사전 비자, 취업허가.'},
+{c:'BJ',n:'베냉',en:'Benin',r:'아프리카',pop:14.5,a:42,o:3,gov:'대통령제',reg:'혼합',pol:3,gii:117,gpi:122,war:3,safe:3,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'코토누 항구를 통한 무역이 경제의 중심이다. 북부로 사헬 지역 무장세력이 넘어오면서 군 피해가 늘었다.',
+pro:['항만 무역','전자비자','개혁 성향 경제 정책'],
+con:['북부 무장세력 확산','권위주의화','프랑스어 필요'],
+visa:'전자비자, 취업허가.'},
+{c:'TG',n:'토고',en:'Togo',r:'아프리카',pop:9.5,a:39,o:3,gov:'의원내각제(2024년 개헌)',reg:'권위주의',pol:3,gii:122,gpi:119,war:3,safe:3,open:3,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'로메 항구가 서아프리카 물류 거점이다. 2024년 개헌으로 장기 집권의 길을 열어 반발이 컸고 북부에 무장세력이 들어오고 있다.',
+pro:['로메 항 물류 허브','전자비자','항만 투자'],
+con:['장기 집권 개헌','북부 무장세력','프랑스어 필요'],
+visa:'전자비자, 취업허가.'},
+{c:'DJ',n:'지부티',en:'Djibouti',r:'아프리카',pop:1.2,a:29,o:5,gov:'대통령제',reg:'권위주의',pol:1,gii:null,gpi:105,war:3,safe:3,open:3,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'홍해 입구에 있어 미국, 중국, 일본 등의 군사기지가 몰려 있다. 에티오피아 수출입의 대부분이 이 항구를 거친다.',
+pro:['홍해 물류 요충지','외국군 기지 관련 수요','달러 고정 환율'],
+con:['후티 사태로 홍해 불안','장기 집권','고급 일자리 부족'],
+visa:'전자비자, 취업허가.'},
+{c:'MR',n:'모리타니',en:'Mauritania',r:'아프리카',pop:5,a:39,o:3.5,gov:'대통령제',reg:'혼합',pol:2,gii:131,gpi:112,war:2,safe:3,open:2,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'사하라 사막의 대부분을 차지하는 나라로 해상 가스 생산이 막 시작됐다. 사헬 국가 중에서는 비교적 안정적이다.',
+pro:['해상 가스 생산 시작','철광석','사헬 중 비교적 안정'],
+con:['일자리 부족','사막 기후','사헬 분쟁 인접'],
+visa:'전자비자, 취업허가.'},
+{c:'SZ',n:'에스와티니',en:'Eswatini',r:'아프리카',pop:1.2,a:34,o:4.5,gov:'절대군주제',reg:'권위주의',pol:2,gii:null,gpi:104,war:1,safe:3,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'아프리카에 남은 마지막 절대군주국. 남아공 경제에 크게 의존하고 2021년 민주화 시위가 유혈 진압됐다.',
+pro:['남아공 접근성','작은 규모의 안정','관광'],
+con:['절대군주제','남아공 의존','일자리 부족'],
+visa:'입국 비자 요건 확인 필요, 취업허가.'},
+{c:'LS',n:'레소토',en:'Lesotho',r:'아프리카',pop:2.3,a:32,o:5.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:3,gii:128,gpi:86,war:1,safe:2,open:3,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'남아공에 완전히 둘러싸인 산악 왕국. 섬유 수출이 미국 관세 변화에 크게 흔들렸다.',
+pro:['수자원','영어 공용어','산악 관광'],
+con:['남아공 의존','섬유 수출 타격','치안 나쁨'],
+visa:'입국 비자 요건 확인 필요, 취업허가.'}
+);
+D.push(
+{c:'CU',n:'쿠바',en:'Cuba',r:'중남미',pop:10.9,a:15.5,o:17,gov:'공산당 일당제',reg:'권위주의',pol:1,gii:null,gpi:109,war:1,safe:3,open:2,job:1,pow:1,br:1,ve:3,isl:1,weu:0,no:0,
+feat:'2024년 한국과 수교한 카리브해 최대 섬나라. 전력난과 생필품 부족으로 2020년대 들어 대규모 인구 유출이 이어졌다.',
+pro:['의료, 교육 인력 수준','관광 자원','한국과 수교'],
+con:['섬나라','전력난과 생필품 부족','사기업 활동 제한'],
+visa:'관광카드, 취업은 국영 기관 통해서만.'},
+{c:'JM',n:'자메이카',en:'Jamaica',r:'중남미',pop:2.8,a:21,o:9.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:3,gii:87,gpi:70,war:1,safe:2,open:4,job:1,pow:1,br:2,ve:4,isl:1,weu:0,no:0,
+feat:'영어를 쓰는 카리브해 관광 대국으로 미국과 가깝다. 살인율이 줄고 있지만 여전히 높은 편이다.',
+pro:['영어 공용어','미국과 가까움','관광 산업'],
+con:['섬나라','높은 살인율','일자리 부족'],
+visa:'입국 비자 요건 확인 필요, 취업허가.'},
+{c:'HT',n:'아이티',en:'Haiti',r:'중남미',pop:11.8,a:31,o:5,gov:'과도 정부(선출 공직자 부재)',reg:'혼합',pol:5,gii:null,gpi:142,war:5,safe:1,open:2,job:1,pow:1,br:1,ve:1,isl:1,weu:0,no:0,
+feat:'무장 갱단이 수도 대부분을 장악해 국가 기능이 사실상 마비됐다. 한국 정부의 여행금지국이다.',
+pro:['젊은 인구','미국과 가까움','국제 원조'],
+con:['갱단 무력 장악','치안 붕괴','한국 정부 여행금지국'],
+visa:'여행금지국(예외 허가 필요).'},
+{c:'BS',n:'바하마',en:'Bahamas',r:'중남미',pop:0.41,a:19,o:9,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:2,gii:null,gpi:null,war:1,safe:3,open:3,job:2,pow:1,br:2,ve:4,isl:1,weu:0,no:0,
+feat:'미국 플로리다 앞바다의 관광, 금융 섬나라로 개인소득세가 없다.',
+pro:['개인소득세 없음','미국과 가까움','영어 공용어'],
+con:['섬나라','물가 높음','허리케인'],
+visa:'입국 비자 요건 확인 필요, 취업허가(고용주 신청).'},
+{c:'BB',n:'바베이도스',en:'Barbados',r:'중남미',pop:0.28,a:16.5,o:17,gov:'의원내각제(2021년 공화국 전환)',reg:'민주주의',pol:2,gii:91,gpi:null,war:1,safe:4,open:4,job:1,pow:1,br:1,ve:5,isl:1,weu:0,no:0,
+feat:'2021년 영국 군주를 국가원수에서 내리고 공화국이 됐다. 원격 근무자용 웰컴 스탬프 비자를 처음 만든 나라다.',
+pro:['웰컴 스탬프(원격 근무 비자)','치안 양호','영어 공용어'],
+con:['섬나라','물가 높음','현지 일자리 적음'],
+visa:'웰컴 스탬프 12개월 비자.'},
+{c:'TT',n:'트리니다드토바고',en:'Trinidad and Tobago',r:'중남미',pop:1.5,a:19,o:12.5,gov:'의원내각제(공화국)',reg:'민주주의',pol:4,gii:107,gpi:79,war:1,safe:2,open:3,job:2,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'카리브해에서 드물게 석유와 가스 산업이 큰 나라. 강력범죄가 늘어 비상사태를 선포하기도 했다.',
+pro:['에너지 산업','카리브해 상위 소득','영어 공용어'],
+con:['섬나라','강력범죄 증가','민족 갈등 정치'],
+visa:'입국 비자 요건 확인 필요, 취업허가.'},
+{c:'LC',n:'세인트루시아',en:'Saint Lucia',r:'중남미',pop:0.18,a:17,o:11,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:2,gii:null,gpi:null,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'관광과 투자이민(시민권 판매) 프로그램으로 알려진 동카리브해 섬나라.',
+pro:['투자 시민권 제도','관광','영어 공용어'],
+con:['섬나라','시장이 매우 작음','허리케인'],
+visa:'입국 비자 요건 확인 필요, 투자 시민권.'},
+{c:'GD',n:'그레나다',en:'Grenada',r:'중남미',pop:0.12,a:20,o:10,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:2,gii:null,gpi:null,war:1,safe:4,open:4,job:1,pow:1,br:3,ve:4,isl:1,weu:0,no:0,
+feat:'투자 시민권을 파는 카리브해 섬나라 중 유일하게 미국과 E-2 조약을 맺어, 시민권자가 미국 투자비자를 신청할 수 있다.',
+pro:['미국 E-2 조약국','투자 시민권 제도','치안 양호'],
+con:['섬나라','시장이 매우 작음','시민권 비용 큼'],
+visa:'투자 시민권, 입국 비자 요건 확인 필요.'},
+{c:'VC',n:'세인트빈센트그레나딘',en:'Saint Vincent and the Grenadines',r:'중남미',pop:0.1,a:19,o:11,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:3,gii:null,gpi:null,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'32개 섬으로 이뤄진 작은 나라로 농업과 요트 관광이 중심이다.',
+pro:['자연환경','요트 관광','영어 공용어'],
+con:['섬나라','시장이 매우 작음','허리케인'],
+visa:'입국 비자 요건 확인 필요, 취업허가.'},
+{c:'AG',n:'앤티가바부다',en:'Antigua and Barbuda',r:'중남미',pop:0.094,a:18,o:9.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:2,gii:null,gpi:null,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'관광과 투자 시민권, 원격 근무 비자를 운영하는 동카리브해 섬나라.',
+pro:['원격 근무 비자','투자 시민권','관광'],
+con:['섬나라','시장이 매우 작음','물가 높음'],
+visa:'원격 근무 비자(노마드 디지털 레지던스), 투자 시민권.'},
+{c:'DM',n:'도미니카연방',en:'Dominica',r:'중남미',pop:0.073,a:20,o:12,gov:'의원내각제(공화국)',reg:'민주주의',pol:3,gii:null,gpi:null,war:1,safe:4,open:4,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'투자 시민권이 재정의 큰 몫을 차지하는 화산섬. 도미니카공화국과는 다른 나라다.',
+pro:['투자 시민권','자연환경','치안 양호'],
+con:['섬나라','시장이 매우 작음','허리케인'],
+visa:'입국 비자 요건 확인 필요, 투자 시민권.'},
+{c:'KN',n:'세인트키츠네비스',en:'Saint Kitts and Nevis',r:'중남미',pop:0.047,a:19,o:10,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:2,gii:null,gpi:null,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'1984년 세계 최초로 투자 시민권 제도를 만든 섬나라.',
+pro:['가장 오래된 투자 시민권','관광','영어 공용어'],
+con:['섬나라','시장이 매우 작음','물가 높음'],
+visa:'입국 비자 요건 확인 필요, 투자 시민권.'},
+{c:'FJ',n:'피지',en:'Fiji',r:'오세아니아',pop:0.93,a:28,o:6.5,gov:'의원내각제(공화국)',reg:'혼합',pol:3,gii:null,gpi:null,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'남태평양 관광과 지역 기구의 중심지. 여러 차례 쿠데타를 겪은 뒤 2022년 평화적 정권 교체가 있었다.',
+pro:['남태평양 중심지','관광','영어 통용'],
+con:['섬나라','쿠데타 이력','일자리 부족'],
+visa:'무비자 입국, 취업허가.'},
+{c:'PG',n:'파푸아뉴기니',en:'Papua New Guinea',r:'오세아니아',pop:10.3,a:34,o:3.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:3,gii:null,gpi:84,war:2,safe:1,open:3,job:1,pow:1,br:1,ve:2,isl:1,weu:0,no:0,
+feat:'LNG와 광물 자원이 풍부하지만 부족 간 폭력과 도시 범죄가 심각하다. 800개가 넘는 언어가 쓰인다.',
+pro:['LNG, 광물 자원','젊은 인구','영어 통용'],
+con:['치안 매우 나쁨','부족 간 폭력','인프라 부족'],
+visa:'사전 비자, 취업허가.'},
+{c:'SB',n:'솔로몬제도',en:'Solomon Islands',r:'오세아니아',pop:0.82,a:39,o:3.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:3,gii:null,gpi:null,war:1,safe:3,open:3,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'2022년 중국과 안보 협정을 맺어 미중 경쟁의 무대가 됐다. 어업과 목재가 주력이다.',
+pro:['어업, 목재 자원','젊은 인구','도착 비자'],
+con:['섬나라','인프라 부족','미중 경쟁 무대'],
+visa:'도착 방문허가, 취업허가.'},
+{c:'VU',n:'바누아투',en:'Vanuatu',r:'오세아니아',pop:0.33,a:38,o:4,gov:'의원내각제(공화국)',reg:'민주주의',pol:3,gii:null,gpi:null,war:1,safe:4,open:3,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'투자 시민권 판매로 EU와 마찰을 빚은 섬나라. 2024년 말 수도에 큰 지진이 났다.',
+pro:['낮은 세금','자연환경','투자 시민권'],
+con:['섬나라','지진, 사이클론','일자리 부족'],
+visa:'무비자 입국, 취업허가.'},
+{c:'WS',n:'사모아',en:'Samoa',r:'오세아니아',pop:0.22,a:36,o:5.5,gov:'의원내각제',reg:'민주주의',pol:3,gii:null,gpi:null,war:1,safe:4,open:3,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'전통 공동체 문화가 강한 남태평양 섬나라로 해외 이민자 송금 의존이 크다.',
+pro:['치안 양호','공동체 문화','자연환경'],
+con:['섬나라','송금 의존','일자리 부족'],
+visa:'무비자 입국, 취업허가.'},
+{c:'TO',n:'통가',en:'Tonga',r:'오세아니아',pop:0.1,a:33,o:6.5,gov:'입헌군주제',reg:'혼합',pol:2,gii:null,gpi:null,war:1,safe:4,open:3,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'남태평양의 유일한 왕국. 2022년 해저화산 폭발과 쓰나미로 큰 피해를 입었다.',
+pro:['치안 양호','전통 문화','자연환경'],
+con:['섬나라','자연재해','일자리 부족'],
+visa:'무비자 입국, 취업허가.'},
+{c:'KI',n:'키리바시',en:'Kiribati',r:'오세아니아',pop:0.13,a:35,o:4.5,gov:'대통령제',reg:'민주주의',pol:2,gii:null,gpi:null,war:1,safe:4,open:3,job:1,pow:1,br:1,ve:3,isl:1,weu:0,no:0,
+feat:'해수면 상승으로 국토를 잃을 위기에 놓인 산호섬 나라. 넓은 바다 영역 덕에 어업 수입이 크다.',
+pro:['어업 수입','치안 양호','자연환경'],
+con:['섬나라','해수면 상승','일자리 거의 없음'],
+visa:'입국 비자 요건 확인 필요.'},
+{c:'TV',n:'투발루',en:'Tuvalu',r:'오세아니아',pop:0.01,a:30,o:6.5,gov:'의원내각제(입헌군주제)',reg:'민주주의',pol:1,gii:null,gpi:null,war:1,safe:5,open:3,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'인구 1만 명의 산호섬 나라. 해수면 상승에 대비해 호주와 기후 이주 협정을 맺었다.',
+pro:['치안 최상급','도착 비자','자연환경'],
+con:['섬나라','해수면 상승','일자리 거의 없음'],
+visa:'도착 비자.'},
+{c:'NR',n:'나우루',en:'Nauru',r:'오세아니아',pop:0.012,a:33,o:3,gov:'의원내각제(대통령)',reg:'민주주의',pol:2,gii:null,gpi:null,war:1,safe:4,open:2,job:1,pow:1,br:1,ve:2,isl:1,weu:0,no:0,
+feat:'세계에서 가장 작은 섬 공화국. 인광석이 바닥난 뒤 호주의 역외 난민 수용 시설이 주요 수입원이 됐다.',
+pro:['치안 양호','작은 공동체','자연환경'],
+con:['섬나라','자원 고갈','일자리 거의 없음'],
+visa:'사전 비자.'},
+{c:'MH',n:'마셜제도',en:'Marshall Islands',r:'오세아니아',pop:0.04,a:34,o:5,gov:'대통령제(의회 선출)',reg:'민주주의',pol:2,gii:null,gpi:null,war:1,safe:4,open:3,job:1,pow:1,br:2,ve:3,isl:1,weu:0,no:0,
+feat:'미국과 자유연합협정(COFA)을 맺어 국민이 미국에서 비자 없이 살고 일할 수 있다. 다만 외국인이 이 나라 시민권을 얻기는 사실상 어렵다.',
+pro:['미국 자유연합협정','미국 달러 사용','치안 양호'],
+con:['섬나라','해수면 상승','인구 유출'],
+visa:'입국 비자 요건 확인 필요.'},
+{c:'FM',n:'미크로네시아',en:'Micronesia',r:'오세아니아',pop:0.11,a:31,o:6,gov:'연방 대통령제',reg:'민주주의',pol:1,gii:null,gpi:null,war:1,safe:4,open:3,job:1,pow:1,br:2,ve:4,isl:1,weu:0,no:0,
+feat:'600여 개 섬으로 이뤄진 연방국으로 미국과 자유연합협정을 맺고 달러를 쓴다.',
+pro:['미국 자유연합협정','미국 달러 사용','무비자 입국'],
+con:['섬나라','일자리 거의 없음','인구 유출'],
+visa:'무비자 입국.'},
+{c:'PW',n:'팔라우',en:'Palau',r:'오세아니아',pop:0.018,a:18,o:12,gov:'대통령제',reg:'민주주의',pol:2,gii:null,gpi:null,war:1,safe:4,open:3,job:1,pow:1,br:2,ve:4,isl:1,weu:0,no:0,
+feat:'다이빙 관광으로 유명하고 미국과 자유연합협정을 맺었다. 대만과 수교하고 있다.',
+pro:['미국 자유연합협정','관광','한국인 관광객 많음'],
+con:['섬나라','관광 편중','시장이 매우 작음'],
+visa:'무비자 입국(30일).'},
+{c:'MG',n:'마다가스카르',en:'Madagascar',r:'아프리카',pop:31,a:39,o:3.5,gov:'대통령제(군 출신 과도 체제)',reg:'권위주의',pol:4,gii:113,gpi:59,war:2,safe:2,open:3,job:1,pow:1,br:1,ve:3,isl:1,weu:0,no:0,
+feat:'세계 4위 크기의 섬나라로 바닐라와 니켈이 주력이다. 2025년 청년 시위 끝에 군이 권력을 잡았다.',
+pro:['니켈, 바닐라 자원','독특한 생태계','젊은 인구'],
+con:['섬나라','2025년 군 권력 장악','빈곤'],
+visa:'전자비자, 취업허가.'},
+{c:'MV',n:'몰디브',en:'Maldives',r:'아시아',pop:0.52,a:20,o:5,gov:'대통령제',reg:'혼합',pol:4,gii:null,gpi:null,war:1,safe:4,open:3,job:2,pow:1,br:1,ve:5,isl:1,weu:0,no:0,
+feat:'고급 리조트 관광의 나라로 인구의 상당수가 외국인 노동자다. 해수면 상승 위험이 크다.',
+pro:['관광 일자리','무료 도착 비자','치안 양호'],
+con:['섬나라','해수면 상승','관광 편중'],
+visa:'도착 비자(무료), 취업허가.'},
+{c:'SC',n:'세이셸',en:'Seychelles',r:'아프리카',pop:0.12,a:21,o:9,gov:'대통령제',reg:'민주주의',pol:3,gii:null,gpi:null,war:1,safe:4,open:3,job:2,pow:1,br:1,ve:5,isl:1,weu:0,no:0,
+feat:'아프리카에서 1인당 소득이 가장 높은 축의 인도양 관광 섬나라.',
+pro:['아프리카 최상위 소득','관광','무비자 방문허가'],
+con:['섬나라','시장이 매우 작음','물가 높음'],
+visa:'무비자 방문허가, 취업허가.'},
+{c:'KM',n:'코모로',en:'Comoros',r:'아프리카',pop:0.88,a:37,o:3.5,gov:'연방 대통령제',reg:'권위주의',pol:3,gii:null,gpi:null,war:1,safe:3,open:3,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'모잠비크 해협의 화산섬 나라로 쿠데타가 잦았다. 해외 송금 의존이 크다.',
+pro:['도착 비자','자연환경','젊은 인구'],
+con:['섬나라','정치 불안','빈곤'],
+visa:'도착 비자.'},
+{c:'CV',n:'카보베르데',en:'Cabo Verde',r:'아프리카',pop:0.53,a:24,o:6.5,gov:'준대통령제',reg:'민주주의',pol:2,gii:103,gpi:null,war:1,safe:4,open:4,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'아프리카에서 손꼽히는 안정적 민주국가. 2024년 말라리아 퇴치 인증을 받았고 원격 근무자 유치에 적극적이다.',
+pro:['정치 안정','원격 근무 비자','치안 양호'],
+con:['섬나라','물 부족','일자리 부족'],
+visa:'사전 온라인 등록(EASE), 원격 근무 비자.'},
+{c:'ST',n:'상투메프린시페',en:'Sao Tome and Principe',r:'아프리카',pop:0.23,a:39,o:3.5,gov:'준대통령제',reg:'민주주의',pol:3,gii:null,gpi:null,war:1,safe:4,open:4,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'기니만의 작은 섬나라로 카카오가 주력이다. 평화적 정권 교체가 이어져 왔다.',
+pro:['정치적 평화','치안 양호','자연환경'],
+con:['섬나라','일자리 거의 없음','포르투갈어 필요'],
+visa:'입국 비자 요건 확인 필요.'},
+{c:'TL',n:'동티모르',en:'Timor-Leste',r:'아시아',pop:1.4,a:33,o:4.5,gov:'준대통령제',reg:'민주주의',pol:3,gii:null,gpi:32,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:4,isl:1,weu:0,no:0,
+feat:'2002년 독립한 젊은 민주국가로 2025년 아세안 11번째 회원국이 됐다. 석유 기금이 바닥나는 것이 과제다.',
+pro:['평화지수 32위','아세안 가입','젊은 인구'],
+con:['섬나라','석유 기금 고갈','일자리 부족'],
+visa:'도착 비자, 취업허가.'},
+{c:'AF',n:'아프가니스탄',en:'Afghanistan',r:'중앙아시아',pop:42,a:42,o:2.5,gov:'탈레반 신정 체제',reg:'권위주의',pol:1,gii:null,gpi:157,war:4,safe:1,open:1,job:1,pow:1,br:1,ve:1,isl:0,weu:0,no:0,
+feat:'2021년 탈레반이 재집권해 여성의 교육과 취업이 금지됐다. 한국 정부의 여행금지국이다.',
+pro:['광물 자원','젊은 인구','오랜 문화유산'],
+con:['한국 정부 여행금지국','여성 권리 박탈','테러 위험'],
+visa:'여행금지국.'},
+{c:'SY',n:'시리아',en:'Syria',r:'중동',pop:24,a:30,o:4.5,gov:'과도 정부',reg:'권위주의',pol:4,gii:null,gpi:155,war:5,safe:1,open:1,job:1,pow:1,br:1,ve:1,isl:0,weu:0,no:0,
+feat:'2024년 12월 아사드 정권이 무너지고 과도 정부가 들어섰지만 종파 충돌과 이스라엘 공습이 이어진다. 한국 정부의 여행금지국이다.',
+pro:['재건 수요','젊은 인구','문화유산'],
+con:['한국 정부 여행금지국','종파 충돌','경제 붕괴'],
+visa:'여행금지국.'},
+{c:'YE',n:'예멘',en:'Yemen',r:'중동',pop:40,a:39,o:3,gov:'분열(후티와 정부)',reg:'권위주의',pol:5,gii:null,gpi:156,war:5,safe:1,open:1,job:1,pow:1,br:1,ve:1,isl:0,weu:0,no:0,
+feat:'후티 반군이 북부를 장악한 채 10년 넘게 내전 중이고, 2026년에는 사우디 공격을 재개했다. 한국 정부의 여행금지국이다.',
+pro:['젊은 인구','홍해 요충지','문화유산'],
+con:['한국 정부 여행금지국','내전','인도적 위기'],
+visa:'여행금지국.'},
+{c:'SD',n:'수단',en:'Sudan',r:'아프리카',pop:50,a:41,o:3.5,gov:'군정(내전 중)',reg:'권위주의',pol:5,gii:null,gpi:162,war:5,safe:1,open:1,job:1,pow:1,br:1,ve:1,isl:0,weu:0,no:0,
+feat:'2023년부터 정부군과 신속지원군(RSF)의 내전으로 세계 최대 규모의 피란민이 생겼다. 한국 정부의 여행금지국이다.',
+pro:['농업 잠재력','나일강 자원','젊은 인구'],
+con:['한국 정부 여행금지국','내전','기근'],
+visa:'여행금지국.'},
+{c:'SS',n:'남수단',en:'South Sudan',r:'아프리카',pop:11.9,a:42,o:2.5,gov:'대통령제',reg:'권위주의',pol:5,gii:null,gpi:158,war:5,safe:1,open:1,job:1,pow:1,br:1,ve:1,isl:0,weu:0,no:0,
+feat:'2011년 독립한 세계에서 가장 젊은 나라지만 내전과 정치 갈등이 되풀이된다. 한국 정부의 여행금지국이다.',
+pro:['석유 자원','젊은 인구','국제 원조'],
+con:['한국 정부 여행금지국','무력 충돌','기근'],
+visa:'여행금지국.'},
+{c:'MM',n:'미얀마',en:'Myanmar',r:'아시아',pop:54.5,a:24,o:7.5,gov:'군정',reg:'권위주의',pol:5,gii:125,gpi:151,war:5,safe:1,open:2,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'2021년 쿠데타 이후 군부와 저항 세력의 내전이 이어진다. 2025년 3월 큰 지진까지 겹쳤다.',
+pro:['젊은 인구','천연자원','봉제 산업'],
+con:['내전','일부 지역 한국 정부 여행금지','군정 탄압'],
+visa:'전자비자(일부 지역 여행금지).'},
+{c:'SO',n:'소말리아',en:'Somalia',r:'아프리카',pop:19,a:47,o:2.5,gov:'연방 대통령제',reg:'권위주의',pol:4,gii:null,gpi:153,war:5,safe:1,open:1,job:1,pow:1,br:1,ve:1,isl:0,weu:0,no:0,
+feat:'알샤바브 무장 테러가 계속되는 아프리카의 뿔 지역 국가. 한국 정부의 여행금지국이다.',
+pro:['긴 해안선','젊은 인구','송금 경제'],
+con:['한국 정부 여행금지국','무장 테러','해적'],
+visa:'여행금지국.'},
+{c:'LY',n:'리비아',en:'Libya',r:'아프리카',pop:7.4,a:27,o:5,gov:'동서 분열 정부',reg:'권위주의',pol:5,gii:null,gpi:125,war:4,safe:2,open:1,job:1,pow:1,br:1,ve:1,isl:0,weu:0,no:0,
+feat:'아프리카 최대 석유 매장국이지만 2011년 이후 동서로 정부가 갈라져 있다. 한국 정부의 여행금지국이다.',
+pro:['석유 자원','재건 건설 수요','지중해 연안'],
+con:['한국 정부 여행금지국','정부 분열','민병대'],
+visa:'여행금지국.'},
+{c:'ML',n:'말리',en:'Mali',r:'아프리카',pop:24,a:46,o:2.5,gov:'군정',reg:'권위주의',pol:2,gii:134,gpi:154,war:5,safe:1,open:1,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'군정이 들어선 뒤 이슬람 무장세력의 공세가 커져 수도 연료 공급까지 막혔다.',
+pro:['금 광산','젊은 인구','문화유산'],
+con:['무장세력 확산','군정','여행경보 최고 수준 지역'],
+visa:'여행경보 확인 필수, 사전 비자.'},
+{c:'BF',n:'부르키나파소',en:'Burkina Faso',r:'아프리카',pop:23.5,a:43,o:2.5,gov:'군정',reg:'권위주의',pol:2,gii:130,gpi:149,war:5,safe:1,open:1,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'2022년 두 차례 쿠데타 이후 군정이 집권하고, 국토의 상당 부분이 무장세력 영향 아래 있다.',
+pro:['금 광산','젊은 인구','농업'],
+con:['무장세력 장악 지역','군정','여행경보'],
+visa:'여행경보 확인 필수, 사전 비자.'},
+{c:'NE',n:'니제르',en:'Niger',r:'아프리카',pop:27,a:49,o:2.5,gov:'군정(2023년 쿠데타)',reg:'권위주의',pol:2,gii:138,gpi:146,war:4,safe:1,open:1,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'세계에서 출산율이 가장 높은 나라. 2023년 쿠데타 이후 서방과 관계를 끊고 러시아와 가까워졌다.',
+pro:['우라늄 자원','젊은 인구','농업'],
+con:['인구가 지나치게 젊음','군정','무장세력'],
+visa:'여행경보 확인 필수, 사전 비자.'},
+{c:'TD',n:'차드',en:'Chad',r:'아프리카',pop:19,a:47,o:2.5,gov:'대통령제(군 출신)',reg:'권위주의',pol:3,gii:139,gpi:145,war:4,safe:1,open:1,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'수단 내전 피란민이 대거 몰려 있고 국경 분쟁이 끊이지 않는다. 혁신지수 최하위다.',
+pro:['석유 자원','젊은 인구','국제 원조'],
+con:['주변국 분쟁','치안','혁신지수 최하위'],
+visa:'여행경보 확인 필수, 사전 비자.'},
+{c:'CF',n:'중앙아프리카공화국',en:'Central African Republic',r:'아프리카',pop:5.5,a:47,o:3,gov:'대통령제',reg:'권위주의',pol:3,gii:null,gpi:150,war:4,safe:1,open:1,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'무장 단체가 국토 곳곳을 장악하고 러시아 민간 군사기업이 정부를 지원한다. 세계 최빈국 중 하나다.',
+pro:['광물 자원','젊은 인구','국제 원조'],
+con:['무장 단체','치안 붕괴','최빈국'],
+visa:'여행경보 확인 필수, 사전 비자.'},
+{c:'CD',n:'콩고민주공화국',en:'DR Congo',r:'아프리카',pop:112,a:46,o:2.5,gov:'준대통령제',reg:'권위주의',pol:4,gii:137,gpi:161,war:5,safe:1,open:1,job:1,pow:2,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'코발트 매장량 세계 1위로 배터리 공급망의 핵심이지만, 동부에서 M23 반군과의 전쟁이 이어진다.',
+pro:['코발트, 구리 자원','큰 인구','배터리 공급망'],
+con:['동부 전쟁','치안 붕괴','평화지수 161위'],
+visa:'여행경보 확인 필수, 사전 비자.'},
+{c:'ER',n:'에리트레아',en:'Eritrea',r:'아프리카',pop:3.6,a:39,o:4,gov:'일당 대통령제(선거 없음)',reg:'권위주의',pol:1,gii:null,gpi:128,war:3,safe:3,open:1,job:1,pow:1,br:1,ve:1,isl:0,weu:0,no:0,
+feat:'독립 이후 한 번도 선거를 치르지 않았고 무기한 국가 복무가 있어 아프리카의 북한으로 불린다.',
+pro:['홍해 연안','거리 치안','광물 자원'],
+con:['극도로 폐쇄적','무기한 국가 복무','에티오피아와 긴장'],
+visa:'사전 비자(발급 까다로움).'},
+{c:'KP',n:'북한',en:'North Korea',r:'아시아',pop:26,a:19.5,o:12,gov:'세습 일당 독재',reg:'권위주의',pol:1,gii:null,gpi:147,war:4,safe:3,open:1,job:1,pow:2,br:1,ve:1,isl:0,weu:0,no:0,
+feat:'핵무기를 보유한 세습 독재 국가로 러시아에 병력을 보내 우크라이나 전쟁에 개입했다. 한국 국민은 정부 승인 없이 방문할 수 없다.',
+pro:['한국어 사용','지하자원','지리적 근접성'],
+con:['방문 자체가 불가','세계 최악 수준 인권','핵 위협'],
+visa:'한국 국민 방문 불가(통일부 승인 필요).'},
+{c:'BI',n:'부룬디',en:'Burundi',r:'아프리카',pop:14,a:45,o:2.5,gov:'대통령제',reg:'권위주의',pol:2,gii:135,gpi:129,war:3,safe:2,open:2,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'1인당 소득이 세계 최저 수준인 내륙국. 콩고민주공화국 동부 분쟁에 군을 보냈다.',
+pro:['젊은 인구','농업','탕가니카호'],
+con:['세계 최저 소득','외화 부족','주변 분쟁'],
+visa:'도착 비자, 취업허가.'},
+{c:'SL',n:'시에라리온',en:'Sierra Leone',r:'아프리카',pop:8.9,a:39,o:3,gov:'대통령제',reg:'민주주의',pol:4,gii:null,gpi:74,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'2002년 내전이 끝난 뒤 평화를 유지하고 있다. 다이아몬드와 철광석이 주력이다.',
+pro:['내전 후 평화 유지','광물 자원','영어 공용어'],
+con:['빈곤','정치 양극화','일자리 부족'],
+visa:'전자비자, 취업허가.'},
+{c:'LR',n:'라이베리아',en:'Liberia',r:'아프리카',pop:5.6,a:40,o:3,gov:'대통령제',reg:'민주주의',pol:3,gii:null,gpi:87,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'미국 해방노예가 세운 나라로 미국 달러가 함께 쓰인다. 세계 최대 선박 등록국 중 하나다.',
+pro:['미국과 역사적 연결','영어 공용어','선박 등록 산업'],
+con:['빈곤','인프라 부족','일자리 부족'],
+visa:'사전 비자, 취업허가.'},
+{c:'GN',n:'기니',en:'Guinea',r:'아프리카',pop:14.5,a:41,o:3,gov:'대통령제(군 출신)',reg:'권위주의',pol:3,gii:null,gpi:116,war:1,safe:2,open:2,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'보크사이트 매장량 세계 1위이고 2025년 시만두 대형 철광산 수출이 시작됐다. 2021년 쿠데타 이후 군 출신이 집권하고 있다.',
+pro:['보크사이트, 철광석','광산 개발 투자','젊은 인구'],
+con:['쿠데타 이후 군 출신 집권','치안','프랑스어 필요'],
+visa:'전자비자, 취업허가.'},
+{c:'GW',n:'기니비사우',en:'Guinea-Bissau',r:'아프리카',pop:2.2,a:40,o:3,gov:'준대통령제(군 개입)',reg:'권위주의',pol:4,gii:null,gpi:85,war:2,safe:3,open:3,job:1,pow:1,br:1,ve:3,isl:0,weu:0,no:0,
+feat:'쿠데타가 잦은 나라로 2025년 11월 대선 직후 군이 권력을 잡았다. 마약 밀매 경유지로 알려져 있다.',
+pro:['캐슈너트 수출','자연환경','작은 공동체'],
+con:['잦은 쿠데타','마약 밀매','포르투갈어 필요'],
+visa:'전자비자.'},
+{c:'GM',n:'감비아',en:'Gambia',r:'아프리카',pop:2.8,a:42,o:2.5,gov:'대통령제',reg:'민주주의',pol:3,gii:null,gpi:56,war:1,safe:3,open:4,job:1,pow:1,br:1,ve:4,isl:0,weu:0,no:0,
+feat:'세네갈에 둘러싸인 아프리카 본토의 가장 작은 나라. 2017년 독재가 끝난 뒤 민주화가 이어지고 있다.',
+pro:['평화지수 56위','영어 공용어','관광'],
+con:['일자리 부족','청년 해외 유출','빈곤'],
+visa:'입국 비자 요건 확인 필요.'},
+{c:'GQ',n:'적도기니',en:'Equatorial Guinea',r:'아프리카',pop:1.8,a:37,o:3,gov:'대통령제(1979년부터 장기 집권)',reg:'권위주의',pol:1,gii:null,gpi:38,war:1,safe:3,open:2,job:1,pow:1,br:1,ve:2,isl:0,weu:0,no:0,
+feat:'석유 덕분에 1인당 소득은 높지만 부가 극소수에 몰려 있다. 같은 대통령이 40년 넘게 집권하고 있다.',
+pro:['석유 자원','평화지수 38위','스페인어 사용'],
+con:['장기 독재','극심한 빈부 격차','석유 생산 감소'],
+visa:'사전 비자.'},
+{c:'SM',n:'산마리노',en:'San Marino',r:'유럽',pop:0.034,a:12.5,o:20,gov:'의원내각제(공동 집정관)',reg:'민주주의',pol:2,gii:null,gpi:null,war:1,safe:5,open:2,job:2,pow:1,br:1,ve:2,isl:0,weu:1,no:0,
+feat:'이탈리아에 둘러싸인 세계에서 가장 오래된 공화국. 소득은 높지만 거주 허가가 엄격하다.',
+pro:['치안 최상급','고소득','이탈리아 접근성'],
+con:['거주 허가 엄격','시장이 매우 작음','서유럽에 속함'],
+visa:'거주 허가(고용, 투자).'},
+{c:'VA',n:'바티칸',en:'Vatican City',r:'유럽',pop:0.0008,a:1,o:35,gov:'선출 군주제(교황)',reg:'권위주의',pol:1,gii:null,gpi:null,war:1,safe:5,open:1,job:1,pow:1,br:1,ve:1,isl:0,weu:1,no:0,
+feat:'세계에서 가장 작은 나라로 가톨릭교회의 중심지. 2025년 5월 레오 14세가 첫 미국 출신 교황으로 선출됐다.',
+pro:['가톨릭 중심지','치안 최상급','문화유산'],
+con:['거주는 성직자와 직원에 한정','일자리 거의 없음','서유럽에 속함'],
+visa:'거주 불가(성직자, 직원 한정).'}
+);
+
+const TAX={"US": [51.8, "연방 최고 37%, 주와 시 세금 포함 시 약 52%, 전 세계 소득 과세", 0, 1], "KR": [49.5, "지방소득세 포함 49.5%, 외국인 근로자는 19% 단일세율 선택 가능", 0, null], "AE": [0.0, "개인소득세 없음", 1, 1], "SA": [0.0, "개인소득세 없음", 1, 1], "QA": [0.0, "개인소득세 없음", 1, 1], "OM": [0.0, "개인소득세 없음, 2028년부터 고소득자 5% 도입 예정", 1, 1], "KW": [0.0, "개인소득세 없음", 1, 1], "BH": [0.0, "개인소득세 없음", 1, 1], "IL": [50.0, "신규 이민자 10년간 해외 소득 면세", 1, 1], "TR": [40.0, "", 0, 1], "PL": [45.0, "", 0, 1], "CZ": [45.7, "", 0, 1], "EE": [23.6, "단일세율", 0, 1], "RO": [10.0, "소득세 10% 단일세율, 사회보험료 별도(약 35%)", 0, 1], "GE": [20.0, "20% 단일세율, 개인 해외 소득 비과세", 1, 1], "DE": [45.0, "", 0, 1], "GB": [47.0, "2025년부터 신규 이주자 4년간 해외 소득 면세", 1, 1], "CH": [45.0, "연방, 칸톤 합산 최고 약 45%, 칸톤별 차이 큼, 외국인 근로자는 원천징수", 0, 1], "PT": [56.03, "IFICI: 10년간 연구, 혁신 직군 20% 단일세율", 1, 1], "CA": [54.8, "", 0, 1], "MX": [35.0, "", 0, 1], "PA": [27.0, "속지주의: 해외 소득 비과세", 1, 1], "CR": [25.0, "속지주의: 해외 소득 비과세", 1, 0], "CL": [40.0, "", 0, 1], "UY": [36.0, "신규 거주자 최대 11년간 해외 소득 면세", 1, 1], "BR": [27.5, "", 0, 1], "AR": [35.0, "", 0, 0], "CO": [39.0, "", 0, 1], "PE": [30.0, "", 0, 1], "CN": [45.0, "", 0, 1], "JP": [50.5, "입국 5년 이내 비영주자는 해외 소득을 송금분만 과세", 1, 1], "SG": [22.0, "해외 소득 비과세", 1, 1], "TW": [40.0, "", 0, 1], "VN": [35.0, "", 0, 1], "MY": [30.0, "개인 해외 소득 2036년까지 면세", 1, 1], "TH": [35.0, "2024년부터 해외 소득은 송금 시 과세", 0, 1], "IN": [39.0, "", 0, 1], "ID": [35.0, "", 0, 1], "PH": [35.0, "", 0, 1], "KZ": [15.0, "10% 기본, 2026년부터 고소득 구간 15%", 0, 1], "UZ": [12.0, "", 0, 1], "ZA": [45.0, "", 0, 1], "EG": [27.5, "", 0, 1], "MA": [38.0, "", 0, 1], "KE": [35.0, "", 0, 1], "NG": [24.0, "", 0, 0], "RW": [30.0, "", 0, 1], "GH": [25.0, "", 0, 0], "AU": [45.0, "", 0, 1], "NZ": [39.0, "", 0, 1], "HU": [15.0, "15% 단일세율", 0, 1], "SK": [25.0, "", 0, 1], "LT": [42.77, "", 0, 1], "LV": [31.4, "", 0, 1], "SI": [50.0, "", 0, 1], "HR": [40.0, "", 0, 1], "BG": [10.0, "10% 단일세율", 0, 1], "RS": [25.0, "", 0, 1], "GR": [44.0, "이주자 7년간 근로소득 50% 비과세", 1, 1], "IT": [43.0, "임파트리에이트: 5년간 근로소득 50% 비과세", 1, 1], "ES": [52.3, "베컴법: 6년간 근로소득 24% 단일세율", 1, 1], "FR": [55.34, "임파트리에이트: 최대 8년간 이주 수당 비과세", 1, 1], "NL": [49.5, "30% 룰링: 이주자 급여 일부 비과세(2027년부터 27%)", 1, 1], "IE": [52.1, "SARP: 이주자 급여 일부 소득공제", 1, 1], "AT": [55.0, "", 0, 1], "SE": [54.0, "전문가 감면: 7년간 소득 25% 비과세", 1, 1], "NO": [47.4, "", 0, 1], "FI": [53.61, "", 0, 1], "DK": [52.07, "연구자, 핵심 인력 7년간 27% 단일세율", 1, 1], "BE": [60.45, "신규 이주자 제도: 급여 30% 비과세", 1, 1], "UA": [22.0, "", 0, 1], "RU": [22.0, "2025년부터 누진세, 최고 22%", 0, 1], "AM": [22.0, "", 0, 0], "AZ": [25.0, "", 0, 1], "JO": [25.0, "", 0, 1], "IQ": [15.0, "", 0, 0], "IR": [35.0, "", 0, 1], "KH": [20.0, "", 0, 1], "BD": [25.0, "", 0, 1], "PK": [45.0, "", 0, 1], "LK": [36.0, "", 0, 1], "MN": [10.0, "", 0, 1], "BN": [0.0, "개인소득세 없음", 1, 1], "KG": [10.0, "10% 단일세율", 0, 1], "NP": [36.0, "", 0, 1], "EC": [35.0, "", 0, 1], "PY": [10.0, "속지주의, 10% 단일세율", 1, 0], "BO": [25.0, "", 0, 0], "DO": [25.0, "", 0, 0], "GT": [7.0, "최고 7%로 낮은 편", 0, 0], "VE": [34.0, "", 0, 1], "SV": [30.0, "", 0, 0], "TZ": [30.0, "", 0, 0], "ET": [35.0, "", 0, 1], "CI": [null, "", 0, 0], "SN": [50.0, "", 0, 0], "TN": [35.0, "", 0, 1], "DZ": [35.0, "", 0, 1], "BW": [25.0, "", 0, 0], "MU": [15.0, "최고 15%", 0, 0], "LU": [44.2, "", 0, 1], "MT": [35.0, "비거주 도미사일은 해외 소득을 송금분만 과세", 1, 1], "CY": [35.0, "비도미사일 배당, 이자 면세, 고소득 신규 이주자 50% 비과세", 1, 0], "IS": [46.28, "", 0, 1], "MD": [12.0, "", 0, 0], "MK": [18.0, "", 0, 0], "AL": [23.0, "", 0, 1], "BA": [10.0, "10% 단일세율", 0, 0], "ME": [15.0, "", 0, 0], "BY": [43.37, "", 0, 1], "XK": [10.0, "", 0, 0], "MC": [0.0, "개인소득세 없음(프랑스 국적자 제외)", 1, 0], "LI": [22.4, "", 0, 0], "AD": [10.0, "", 0, 1], "LB": [25.0, "", 0, 0], "TM": [10.0, "", 0, 1], "TJ": [25.0, "", 0, 1], "LA": [25.0, "", 0, 1], "BT": [25.0, "", 0, 0], "HN": [25.0, "", 0, 0], "NI": [30.0, "", 0, 0], "BZ": [25.0, "", 0, 0], "GY": [35.0, "", 0, 0], "SR": [38.0, "", 0, 0], "ZM": [30.0, "", 0, 0], "UG": [40.0, "", 0, 0], "AO": [17.0, "", 0, 0], "CM": [35.0, "", 0, 0], "MZ": [32.0, "", 0, 0], "ZW": [45.0, "", 0, 0], "NA": [37.0, "", 0, 0], "MW": [35.0, "", 0, 0], "GA": [35.0, "", 0, 1], "CG": [null, "", 0, 0], "BJ": [35.0, "", 0, 0], "TG": [null, "", 0, 0], "DJ": [null, "", 0, 0], "MR": [null, "", 0, 0], "SZ": [33.0, "", 0, 0], "LS": [30.0, "", 0, 0], "CU": [50.0, "", 0, 0], "JM": [30.0, "", 0, 0], "HT": [30.0, "", 0, 0], "BS": [0.0, "개인소득세 없음, 국민보험료는 별도", 1, 0], "BB": [38.0, "", 0, 0], "TT": [30.0, "", 0, 0], "LC": [30.0, "", 0, 0], "GD": [null, "", 0, 0], "VC": [30.0, "", 0, 0], "AG": [0.0, "개인소득세 없음", 1, 0], "DM": [35.0, "", 0, 0], "KN": [0.0, "개인소득세 없음", 1, 0], "FJ": [20.0, "", 0, 1], "PG": [42.0, "", 0, 1], "SB": [null, "", 0, 0], "VU": [0.0, "개인소득세 없음", 1, 0], "WS": [27.0, "", 0, 0], "TO": [null, "", 0, 0], "KI": [null, "", 0, 0], "TV": [null, "", 0, 0], "NR": [null, "", 0, 0], "MH": [12.0, "", 0, 0], "FM": [null, "", 0, 0], "PW": [null, "", 0, 0], "MG": [20.0, "", 0, 0], "MV": [15.0, "", 0, 0], "SC": [15.0, "", 0, 0], "KM": [null, "", 0, 0], "CV": [27.5, "", 0, 0], "ST": [null, "", 0, 0], "TL": [10.0, "", 0, 0], "AF": [20.0, "", 0, 0], "SY": [15.0, "", 0, 0], "YE": [15.0, "", 0, 0], "SD": [null, "", 0, 0], "SS": [null, "", 0, 0], "MM": [25.0, "", 0, 1], "SO": [18.0, "", 0, 0], "LY": [null, "", 0, 0], "ML": [null, "", 0, 0], "BF": [25.0, "", 0, 0], "NE": [null, "", 0, 0], "TD": [null, "", 0, 0], "CF": [50.0, "", 0, 0], "CD": [40.0, "", 0, 0], "ER": [null, "", 0, 0], "KP": [20.0, "", 0, 0], "BI": [35.0, "", 0, 0], "SL": [30.0, "", 0, 0], "LR": [25.0, "", 0, 0], "GN": [null, "", 0, 0], "GW": [null, "", 0, 0], "GM": [30.0, "", 0, 0], "GQ": [35.0, "", 0, 0], "SM": [35.0, "", 0, 0], "VA": [null, "세금 체계 해당 없음(성직자, 직원)", 0, 0]};
+D.forEach(c=>{const t=TAX[c.c]||[null,'',0,null];c.tax=t[0];c.taxN=t[1];c.spec=t[2];c.dta=t[3]});
+
+{
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const BY=Object.fromEntries(D.map(c=>[c.c,c]));D.forEach((c,i)=>c._i=i);
+const FC=14,FR=Math.ceil(D.length/FC);
+const flag=(c,w=22)=>{const h=Math.round(w*.75),x=(c._i%FC)*w,y=Math.floor(c._i/FC)*h;return `<span class="flag" aria-hidden="true" style="width:${w}px;height:${h}px;background-position:-${x}px -${y}px;background-size:${FC*w}px ${FR*h}px"></span>`};
+const REGS=['북미','중남미','중동','유럽','아시아','중앙아시아','아프리카','오세아니아'];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const wa=c=>Math.round((100-c.a-c.o)*10)/10;
+const pyr=c=>c.a>=30?'피라미드형':(c.o>=19||c.a<13)?'역피라미드형':(c.o<12&&wa(c)>=64)?'항아리형':c.a>=25?'완만한 피라미드형':'종형';
+const demoS=c=>{let s=clamp((wa(c)-58)/12,0,1);if(c.o>=19)s*=.45;else if(c.o>=14)s*=.8;if(c.a>=30)s*=.5;return s};
+
+/* approximate 18-band age profile from the three group shares */
+const bands=c=>{const a=c.a,o=c.o,w=100-a-o,ch=a/3,d=a>=25?.1:a<14?-.12:0;
+const C=[ch*(1+d),ch,ch*(1-d)],O=[.33,.26,.19,.13,.09].map(x=>x*o);
+const v1=C[2],v10=O[0]*1.15,L=[...Array(10)].map((_,i)=>v1+(v10-v1)*i/9),B=[...Array(10)].map((_,i)=>Math.sin(Math.PI*(i+.5)/10));
+const sL=L.reduce((x,y)=>x+y,0),sB=B.reduce((x,y)=>x+y,0),k=(w-sL)/sB;let W=L.map((x,i)=>Math.max(.3,x+k*B[i]));const sW=W.reduce((x,y)=>x+y,0);W=W.map(x=>x*w/sW);
+return [...C,...W,...O]};
+const pyrSVG=(c,W,H,lab)=>{const b=bands(c),n=18,g=lab?30:2,half=(W-g)/2,rh=H/n,S=15;let s='';
+b.forEach((v,i)=>{const y=H-(i+1)*rh,len=Math.min(1,v/S)*half,cl=i<4?'y':i<14?'m':'e',h=Math.max(1,rh-(lab?1.5:.6));
+s+=`<rect class="${cl}" x="${(half-len).toFixed(1)}" y="${y.toFixed(1)}" width="${len.toFixed(1)}" height="${h.toFixed(1)}"/><rect class="${cl}" x="${(half+g).toFixed(1)}" y="${y.toFixed(1)}" width="${len.toFixed(1)}" height="${h.toFixed(1)}"/>`;
+if(lab&&i%2===0)s+=`<text x="${(W/2).toFixed(1)}" y="${(y+rh-2).toFixed(1)}" text-anchor="middle">${i===16?'80+':i*5}</text>`});
+return `<svg class="pm" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(c.n)} 인구 피라미드(근사)">${s}</svg>`};
+
+const CR=[
+{k:'job',l:'일자리와 사업 기회',s:c=>(c.job-1)/4,t:c=>['거의 없음','적음','보통','많음','매우 많음'][c.job-1]},
+{k:'pow',l:'국력',s:c=>(c.pow-1)/4,t:c=>['약소국','소국','중견국','강국','초강대국'][c.pow-1]},
+{k:'inn',l:'혁신성',s:c=>c.gii?clamp(1-(c.gii-1)/90,.05,1):.3,t:c=>c.gii?`GII ${c.gii}위`:'GII 미포함'},
+{k:'war',l:'전쟁과 내전 안전',s:c=>(5-c.war)/4,t:c=>'위험 '+['매우 낮음','낮음','보통','높음','매우 높음'][c.war-1]},
+{k:'safe',l:'치안',s:c=>(c.safe-1)/4,t:c=>['매우 나쁨','나쁨','보통','좋음','매우 좋음'][c.safe-1]},
+{k:'demo',l:'인구구조',s:demoS,t:c=>`${pyr(c)}, 근로연령 ${wa(c)}%`},
+{k:'open',l:'외국인 수용도',s:c=>(c.open-1)/4,t:c=>['배타적','다소 배타적','보통','개방적','매우 개방적'][c.open-1]},
+{k:'visa',l:'한국인 진입 쉬움',s:c=>(c.ve-1)/4,t:c=>['매우 어려움','어려움','보통','쉬움','매우 쉬움'][c.ve-1]},
+{k:'tax',l:'세금 부담',s:c=>c.tax==null?.4:Math.min(1,clamp(1-c.tax/55,0,1)+(c.spec?.15:0)),t:c=>c.tax==null?'세율 확인 필요':`최고 ${c.tax}%${c.spec?', 외국인 특례 있음':''}`},
+{k:'br',l:'미국행 다리 가치',s:c=>(c.br-1)/4,t:c=>['거의 없음','약함','보통','강함','매우 강함'][c.br-1]}];
+const CL=Object.fromEntries(CR.map(k=>[k.k,k]));
+const RU=[
+{k:'isl',l:'섬나라 제외',d:'일본, 영국, 호주처럼 섬으로 된 나라를 뺍니다',f:c=>c.isl,y:'섬나라'},
+{k:'crime',l:'치안이 매우 나쁜 곳 제외',d:'살인과 강력범죄가 일상적인 곳',f:c=>c.safe<=1,y:'치안 매우 나쁨'},
+{k:'war',l:'지금 전쟁 영향권인 곳 제외',d:'2026년 공격을 받거나 교전 중인 곳',f:c=>c.war>=5,y:'2026년 전쟁 영향권'},
+{k:'big',l:'강대국만',d:'국력이 강국 이상인 나라만 남깁니다(최종 정착지)',f:c=>c.pow<4,y:'강대국 아님',only:'final'}];
+const EXR=[['weu','서유럽과 남유럽'],['중동','중동'],['중남미','중남미'],['아프리카','아프리카'],['중앙아시아','중앙아시아'],['오세아니아','오세아니아']];
+const ML={final:'최종 정착지',bridge:'미국 가는 중간 다리'};
+const W3=(n)=>[['가장 중요해요',3],['중요해요',2],['조금 봐요',1],['상관없어요',0]].map(([l,v])=>({l,p:s=>{s.w[n]=v}}));
+const QS=[
+{id:'goal',t:'어떤 나라를 찾고 있나요?',h:'정착할 나라인지, 미국으로 가기 전 거쳐 갈 나라인지.',ph:'예: 결국 미국에 가고 싶은데 그 전에 2년 정도 머물 나라',o:[{l:'오래 살 최종 정착지',p:s=>{s.mode='final'}},{l:'미국으로 가기 전에 거쳐 갈 나라',p:s=>{s.mode='bridge'}}]},
+{id:'pow',t:'국력이 강한 나라에 살고 싶나요?',h:'경제 규모, 군사력, 국제 영향력.',ph:'예: 세계 1, 2위 강대국이 아니면 의미 없어요',o:[{l:'강대국만 보고 싶어요',p:s=>{s.r.big=1;s.w.pow=3}},{l:'클수록 좋아요',p:s=>{s.r.big=0;s.w.pow=2}},{l:'상관없어요',p:s=>{s.r.big=0;s.w.pow=0}}]},
+{id:'job',t:'현지에서 좋은 일자리나 사업 기회가 얼마나 중요한가요?',h:'한국인이 얻을 수 있는 일자리의 양과 질, 창업 환경.',ph:'예: 연봉보다 경력이 중요해요',o:W3('job')},
+{id:'inn',t:'혁신과 첨단산업이 발달한 나라가 중요한가요?',h:'세계혁신지수(GII) 기준.',ph:'예: AI 산업이 큰 나라였으면 해요',o:W3('inn')},
+{id:'war',t:'전쟁이나 내전 위험은 어떻게 볼까요?',h:'2026년 전쟁 영향권 국가 포함 여부.',ph:'예: 미사일이 날아오는 곳만 아니면 돼요',o:[{l:'지금 전쟁 영향권은 무조건 빼 주세요',p:s=>{s.r.war=1;s.w.war=3}},{l:'위험이 낮을수록 좋아요',p:s=>{s.r.war=0;s.w.war=2}},{l:'상관없어요',p:s=>{s.r.war=0;s.w.war=0}}]},
+{id:'safe',t:'치안은 어디까지 괜찮나요?',h:'강력범죄와 치안 수준.',ph:'예: 밤에 혼자 걸어도 될 정도면 좋겠어요',o:[{l:'치안이 좋은 곳이어야 해요',p:s=>{s.r.crime=1;s.w.safe=3}},{l:'아주 나쁜 곳만 아니면 돼요',p:s=>{s.r.crime=1;s.w.safe=1}},{l:'상관없어요',p:s=>{s.r.crime=0;s.w.safe=0}}]},
+{id:'demo',t:'나라의 인구 구성도 따져 볼까요?',h:'15~64세 비중이 높은 항아리형일수록 높은 점수.',ph:'예: 고령화가 심한 나라는 피하고 싶어요',o:[{l:'항아리형을 우선해 주세요',p:s=>{s.w.demo=3}},{l:'조금 고려해 주세요',p:s=>{s.w.demo=1}},{l:'상관없어요',p:s=>{s.w.demo=0}}]},
+{id:'open',t:'외국인을 대하는 분위기가 중요한가요?',h:'이민 제도와 외국인에 대한 사회 분위기.',ph:'예: 아시아인 차별이 심한 곳은 싫어요',o:[{l:'배척이 심한 곳은 싫어요',p:s=>{s.w.open=3}},{l:'어느 정도 봐요',p:s=>{s.w.open=2}},{l:'상관없어요',p:s=>{s.w.open=0}}]},
+{id:'visa',t:'비자 받기 쉬운 나라여야 하나요?',h:'한국 여권으로 입국, 취업, 체류하기 쉬운 정도.',ph:'예: 처음엔 워킹홀리데이로 가고 싶어요',o:[{l:'쉬워야 해요',p:s=>{s.w.visa=3}},{l:'조금 고려해 주세요',p:s=>{s.w.visa=1}},{l:'어려워도 괜찮아요',p:s=>{s.w.visa=0}}]},
+{id:'tax',t:'세금 부담이 얼마나 중요한가요?',h:'개인소득세 최고세율과 외국인 특례.',ph:'예: 소득세가 없거나 낮은 나라면 좋겠어요',o:W3('tax')},
+{id:'isl',t:'섬나라도 괜찮나요?',h:'일본, 영국, 호주, 싱가포르 등.',ph:'예: 대륙에 붙어 있어야 이동이 편할 것 같아요',o:[{l:'대륙에 붙은 나라만 볼게요',p:s=>{s.r.isl=1}},{l:'상관없어요',p:s=>{s.r.isl=0}}]},
+{id:'ex',t:'아예 빼고 싶은 지역이나 나라가 있나요?',h:'여러 개 선택 가능. 특정 나라는 이름을 입력.',ph:'예: 캐나다, 중국은 빼 주세요',multi:1,o:EXR.map(([k,l])=>({l,k}))}];
+const NQ=QS.length;
+const BASE=()=>({mode:'final',w:{job:2,pow:1,inn:2,war:2,safe:2,demo:1,open:2,visa:1,tax:1,br:0},r:{isl:0,crime:1,war:1,big:0},ex:{regs:[],cs:[]}});
+const copy=o=>JSON.parse(JSON.stringify(o));
+let st={ans:{},notes:{},step:0,done:false,ai:null,cfg:BASE(),tuned:null};
+try{const s=JSON.parse(localStorage.getItem('imm-compass')||'null');if(s&&s.ans){st.ans=s.ans;st.notes=s.notes||{};st.done=!!s.done;st.ai=s.ai||null;st.tuned=s.tuned||null}}catch(e){}
+const save=()=>{try{localStorage.setItem('imm-compass',JSON.stringify({ans:st.ans,notes:st.notes,done:st.done,ai:st.ai,tuned:st.tuned}))}catch(e){}};
+
+/* free-text reading without Claude */
+const lvl=t=>/상관\s*없|무관|신경\s*안|안\s*중요|필요\s*없|괜찮/.test(t)?0:/매우|가장|꼭|무조건|반드시|최우선|제일|아주|절대/.test(t)?3:/조금|약간|어느\s*정도|살짝/.test(t)?1:/중요|중시|좋|원해|원함|필요|싫/.test(t)?2:null;
+const findC=t=>{const T=t.toLowerCase();return D.filter(c=>T.includes(c.n)||T.includes(c.en.toLowerCase())).map(c=>c.c)};
+function local(cfg,id,t){if(!t)return;const v=lvl(t);
+if(id==='goal'){if(/다리|경유|거쳐|중간|발판|징검|전에/.test(t))cfg.mode='bridge';else if(/정착|최종|평생|오래/.test(t))cfg.mode='final'}
+else if(id==='pow'){if(/강대국\s*(만|이어야|아니면)|1\s*,?\s*2위|초강대국/.test(t)){cfg.r.big=1;cfg.w.pow=3}else if(v!==null)cfg.w.pow=v}
+else if(id==='war'){if(/빼|제외|무조건|절대|미사일|공격/.test(t))cfg.r.war=1;if(v!==null)cfg.w.war=Math.max(v,cfg.r.war?2:0)}
+else if(id==='safe'){if(/빼|제외|절대|위험한|혼자/.test(t))cfg.r.crime=1;if(v!==null)cfg.w.safe=v;else if(/혼자|밤/.test(t))cfg.w.safe=3}
+else if(id==='isl'){if(/대륙|섬.*(빼|제외|싫|안\s*돼|별로)/.test(t))cfg.r.isl=1;else if(/상관|괜찮/.test(t))cfg.r.isl=0}
+else if(id==='ex'){for(const c of findC(t))if(!cfg.ex.cs.includes(c))cfg.ex.cs.push(c);if(/서유럽|남유럽/.test(t)&&!cfg.ex.regs.includes('weu'))cfg.ex.regs.push('weu');for(const r of ['중동','중남미','아프리카','중앙아시아','오세아니아'])if(t.includes(r)&&!cfg.ex.regs.includes(r))cfg.ex.regs.push(r);if(/남미/.test(t)&&!cfg.ex.regs.includes('중남미'))cfg.ex.regs.push('중남미')}
+else if(id==='tax'){if(/없|낮|0%|면세|비과세/.test(t)&&v===null)cfg.w.tax=3;else if(v!==null)cfg.w.tax=v}
+else if(v!==null)cfg.w[id]=v}
+
+function build(){const cfg=BASE();
+for(const q of QS){const a=st.ans[q.id];if(q.multi){if(Array.isArray(a))cfg.ex.regs=a.slice()}else if(a!==undefined&&q.o[a])q.o[a].p(cfg);local(cfg,q.id,(st.notes[q.id]||'').trim())}
+if(st.ai&&st.ai.patch){const p=st.ai.patch;if(p.mode==='final'||p.mode==='bridge')cfg.mode=p.mode;for(const k in (p.w||{}))if(k in cfg.w&&[0,1,2,3].includes(p.w[k]))cfg.w[k]=p.w[k];for(const k in (p.r||{}))if(k in cfg.r&&[0,1].includes(p.r[k]))cfg.r[k]=p.r[k];if(p.ex){for(const r of p.ex.regs||[])if(EXR.some(e=>e[0]===r)&&!cfg.ex.regs.includes(r))cfg.ex.regs.push(r);for(const c of p.ex.cs||[])if(BY[c]&&!cfg.ex.cs.includes(c))cfg.ex.cs.push(c)}}
+if(st.tuned){if(st.tuned.mode)cfg.mode=st.tuned.mode;Object.assign(cfg.w,st.tuned.w||{});Object.assign(cfg.r,st.tuned.r||{})}
+st.cfg=cfg}
+
+const eff=m=>{const w={...st.cfg.w};if(m==='bridge'){w.br=3;w.pow=0}else w.br=0;return w};
+const fit=(c,m)=>{const w=eff(m);let a=0,t=0;for(const k of CR){const x=w[k.k]||0;a+=x*k.s(c);t+=x}return t?Math.round(a/t*100):0};
+const fails=(c,m)=>{const r=st.cfg.r,x=st.cfg.ex,out=RU.filter(u=>r[u.k]&&!(u.only&&u.only!==m)&&u.f(c)).map(u=>u.y);
+if(x.regs.includes('weu')&&c.weu)out.push('서유럽');if(x.regs.includes(c.r))out.push('제외한 지역');if(BAN.has(c.c))out.unshift('이주 불가 국가');if(x.cs.includes(c.c))out.push('직접 제외한 나라');return out};
+const rank=m=>D.filter(c=>!c.base&&!(m==='bridge'&&c.c==='US')).map(c=>({c,s:fit(c,m),f:fails(c,m)})).sort((a,b)=>b.s-a.s);
+const winner=m=>rank(m).find(x=>!x.f.length);
+
+const PF={
+US:{f:'미국은 강대국, 혁신, 양질의 일자리, 본토 안전을 모두 높은 수준으로 갖춘 거의 유일한 나라입니다. 혁신지수는 스위스와 스웨덴에 이어 세계 3위이고, IMF는 2026년과 2027년 성장률을 모두 2.3%로 봅니다. 2026년 이란 전쟁의 당사국이지만 이란의 공격은 걸프의 미군 기지와 동맹국에 집중됐고 미국 본토는 직접 공격받지 않았습니다.',
+w:'약점도 분명합니다. 평화지수는 163개국 중 134위인데 총기 범죄, 군사화, 해외 분쟁 개입이 반영된 결과입니다. 취업비자는 2026년부터 고임금자 우대 추첨으로 바뀌었고 신규 H-1B 10만 달러 수수료를 둘러싼 소송이 이어지고 있어 진입 난이도가 높습니다. 11월 중간선거에서 민주당이 상하원을 모두 가져가 남은 2년은 분점정부입니다. 목적지로는 1위이고, 가는 길(비자)이 진짜 과제입니다.',
+s:['J-1 인턴처럼 들어가기 쉬운 비자로 미국 현지 경력의 첫 줄을 만든다','H-1B 스폰서와 E-2(한국계 기업)가 가능한 회사를 추려 둔다','막히면 미국 법인이 있는 한국 기업에 입사해 1년 뒤 L-1 주재로 우회한다','한국인 전용 E-4(연 1만 5천 개) 법안의 의회 통과 여부를 계속 확인한다']},
+IN:{f:'강대국 조건을 켜면 미국 다음으로 남는 나라가 인도입니다. 인구 세계 1위에 근로연령 인구가 두텁고 혁신지수 38위로 올라오는 중입니다.',w:'다만 외국인이 양질의 일자리를 얻기 어렵고, 평화지수가 1년 새 115위에서 127위로 떨어졌으며 생활 인프라 격차가 큽니다.'}};
+const PB={
+VN:{f:'베트남은 미국으로 가기 위한 1~2년짜리 다리라는 목적에 잘 맞습니다. 한국의 최대 투자처라 삼성, LG, 효성 같은 대기업 현지 법인 자리가 많고, 이런 회사들은 미국 법인도 갖고 있어 1년 근무 후 L-1 주재로 넘어가는 길이 열립니다. 2026년 상반기 성장률 8.18%로 아시아 최고 수준이고, 평화지수 41위로 전쟁과 치안 위험도 낮습니다.',
+w:'단점은 일당 체제와 낮은 현지 급여입니다. 현지 채용으로 가면 연봉이 한국보다 낮을 수 있으니 본사 채용 후 파견 형태를 우선하세요. L-1은 회사가 보내 줘야 성립하는 경로라, 입사할 때 미국 법인이 있는지와 실제 전환 사례를 꼭 확인해야 합니다.',
+s:['미국 법인이 있는 한국 기업의 베트남 법인 공고부터 추린다(전자, 배터리, 섬유, 물류)','해외영업이나 물류 직무로 지원해 1년 경력을 만든다','1년이 되는 시점에 미국 법인 이동(L-1) 가능성을 인사팀과 확인한다','그동안 미국 J-1, H-1B 스폰서 회사 지원은 함께 진행한다']},
+MY:{f:'말레이시아는 평화지수 12위로 후보 중 손꼽히게 안전하고, 인구 대부분이 반도 본토에 살아 대륙 조건도 통과합니다. 반도체 후공정과 데이터센터 투자가 몰려 다국적 기업 일자리가 늘고 있고, 영어가 통해 미국식 업무 경력을 쌓기 좋습니다.',w:'한국 기업 수가 베트남보다 적어 L-1로 이어지는 자리가 상대적으로 적고, 말레이계 우대 정책 때문에 오래 머무를수록 벽이 느껴질 수 있습니다.',
+s:['미국계, 한국계 반도체와 데이터센터 기업의 말레이시아 법인 공고를 찾는다','고용 패스(EP) 스폰서가 가능한 회사인지 먼저 확인한다','미국 본사로 이동한 사례가 있는 회사를 우선한다']},
+MX:{f:'멕시코는 미국과 육로와 공급망으로 붙어 있는 나라입니다. 기아(누에보레온), 삼성과 LG 가전 공장 등 한국 기업이 미국 시장을 겨냥해 자리 잡고 있어 물류와 해외영업 경력이 미국 일자리로 이어지기 쉽습니다.',w:'치안 편차가 매우 크고(평화지수 139위), 2026년 7월 USMCA 검토에서 미국이 연장에 동의하지 않아 투자 불확실성이 커졌습니다. 1분기 성장률도 0.4%에 그쳤습니다. 간다면 몬테레이, 케레타로 같은 공업 도시로 좁히는 게 좋습니다.',
+s:['몬테레이, 케레타로, 티후아나의 한국 기업 법인 채용을 확인한다','미국 쪽 물류 거점(텍사스 등)과 연결된 직무를 고른다','거주 도시의 치안 정보를 확인하고 출퇴근 동선을 정한다']},
+CA:{f:'캐나다는 시민권을 따면 TN 비자로 미국 취업이 훨씬 쉬워지는, 구조적으로 가장 강한 다리입니다.',w:'다만 영주권과 시민권까지 최소 5년 안팎이 걸리고, 그 기간의 기회와 자본 규모는 미국에 한참 못 미칩니다.'},
+PL:{f:'폴란드는 LG에너지솔루션과 방산 기업 등 한국 기업의 유럽 거점이고, 이 기업들 상당수가 미국 공장도 운영합니다. 치안은 최상급(평화지수 22위)입니다.',w:'2026년에도 러시아 드론과 미사일이 영토로 넘어오는 사건이 이어져 전쟁 안전 점수가 크게 깎였습니다.'}};
+const autoTxt=(c,m)=>{const w=eff(m);const sc=CR.filter(k=>w[k.k]>0).map(k=>({k,v:k.s(c)})).sort((a,b)=>b.v-a.v);const f=x=>`${x.k.l}(${x.k.t(c)})`;
+return {f:`${c.feat} 지금 기준에서 강점으로 잡힌 항목은 ${sc.slice(0,2).map(f).join(', ')}입니다.`,w:`약점은 ${sc.slice(-2).map(f).join(', ')}입니다.`}};
+const genS={final:['현지 취업비자 요건과 스폰서가 가능한 기업 목록을 정리한다','첫 1년을 버틸 생활비와 이주 비용을 계산한다','영주권이나 장기 체류로 이어지는 경로를 대사관 공지로 확인한다'],bridge:['미국 법인이 있는 현지 기업부터 지원 목록을 만든다','1년 근무 후 L-1 이동 사례가 있는지 확인한다','미국 J-1, H-1B 지원은 함께 진행한다']};
+
+function explain(){const m=st.cfg.mode,R=rank(m),P=R.filter(x=>!x.f.length),el=$('#result');
+if(!P.length){el.innerHTML=`<h3>조건을 모두 통과한 나라가 없습니다</h3><p style="margin-top:8px">기준 세부 조정에서 조건을 하나 해제해 보세요.</p>`;return}
+const t=P[0],c=t.c,tx=(m==='final'?PF:PB)[c.c]||autoTxt(c,m),steps=tx.s||genS[m],w=eff(m);
+const runners=P.slice(1,3).map(x=>{const up=[],dn=[];for(const k of CR){if(!w[k.k])continue;const d=k.s(x.c)-k.s(c);if(d>=.2)up.push(k.l);else if(d<=-.2)dn.push(k.l)}
+return `<div class="out"><span><b>${esc(x.c.n)}</b></span><span class="num">${x.s}</span><span>${up.length?esc(up.slice(0,2).join(', '))+'에서는 앞서지만 ':''}${dn.length?esc(dn.slice(0,2).join(', '))+'에서 밀립니다.':'차이가 크지 않습니다.'}</span></div>`}).join('');
+const outs=R.filter(x=>x.f.length&&x.s>=t.s-12).slice(0,5).map(x=>`<div class="out"><span><b>${esc(x.c.n)}</b></span><span class="num">${x.s}</span><span>${esc(x.f.join(', '))}</span></div>`).join('');
+let extra='';
+if(m==='bridge')extra+=`<p class="note">참고: E-2와 L-1은 한국 본사 근무 경력으로도 신청 가능. 한국 기업의 미국 법인으로 바로 가는 경로가 더 빠를 수 있음.</p>`;
+if(m==='final'&&st.cfg.r.big){const sv=st.cfg.r.big;st.cfg.r.big=0;const alt=rank('final').filter(x=>!x.f.length&&x.c.c!==c.c)[0];st.cfg.r.big=sv;if(alt)extra+=`<p class="note">강대국 조건 해제 시 2위: <b>${esc(alt.c.n)}</b> (${alt.s}점)</p>`}
+const rows=CR.filter(k=>w[k.k]>0).map(k=>`<tr><td>${esc(k.l)}</td><td>${esc(k.t(c))}<div class="mbar"><i style="width:${Math.round(k.s(c)*100)}%"></i></div></td><td class="num">${['','조금','보통','매우'][w[k.k]]}</td></tr>`).join('');
+el.innerHTML=`<div class="ticket"><div class="tl"><p class="kick">${ML[m]} 추천 1위</p><h3>${flag(c,48)}${esc(c.n)}</h3><p class="sub">${esc(c.en)}, ${esc(c.r)}, ${esc(c.gov)}</p></div><div class="tr"><div class="score">${t.s}<small>100점 만점 적합도</small></div><div class="stamp">${esc(c.c)} 행</div></div></div>
+<div class="vrow"><div class="why"><h4>추천 이유</h4><p>${esc(tx.f)}</p><p>${esc(tx.w)}</p></div>
+<div><h4>인구 피라미드</h4>${pyrSVG(c,190,170,1)}<p class="small" style="margin-top:6px">${esc(pyr(c))}, 근로연령 ${wa(c)}%</p></div></div>
+<h4>기준별 점수</h4><div class="scroll"><table><thead><tr><th>기준</th><th>${esc(c.n)}</th><th class="num">중요도</th></tr></thead><tbody>${rows}</tbody></table></div>
+${runners?`<h4>2, 3위 비교</h4><div class="outs">${runners}</div>`:''}
+${outs?`<h4>조건에 걸려 제외된 나라</h4><div class="outs">${outs}</div>`:''}
+<h4>다음 단계</h4><ol class="steps">${steps.map(s=>`<li><span>${esc(s)}</span></li>`).join('')}</ol>${extra}
+<p style="margin-top:14px"><button type="button" class="ghost" data-open="${esc(c.c)}">${esc(c.n)} 상세 카드 열기</button></p>`}
+
+/* onboarding */
+function showQ(){const q=QS[st.step],a=st.ans[q.id];
+$('#pNum').textContent=`질문 ${st.step+1} / ${NQ}`;$('#route').innerHTML=QS.map((_,i)=>`<i class="${i<st.step?'done':i===st.step?'now':''}"></i>`).join('');const qw=$('#qwrap');if(showQ.last!==st.step){qw.classList.remove('swap');void qw.offsetWidth;qw.classList.add('swap');showQ.last=st.step}
+$('#qT').textContent=q.t;$('#qH').textContent=q.h;
+$('#opts').innerHTML=q.o.map((o,i)=>{const on=q.multi?(Array.isArray(a)&&a.includes(o.k)):a===i;return `<button type="button" class="opt" data-i="${i}" aria-pressed="${on}"><kbd>${i+1}</kbd><span>${esc(o.l)}</span></button>`}).join('');
+const n=$('#note');n.value=st.notes[q.id]||'';n.placeholder=q.ph;
+$('#prev').disabled=st.step===0;$('#next').textContent=st.step===NQ-1?'결과 보기':'다음'}
+function pick(i){const q=QS[st.step];if(q.multi){const a=Array.isArray(st.ans[q.id])?st.ans[q.id]:[];const k=q.o[i].k;st.ans[q.id]=a.includes(k)?a.filter(x=>x!==k):[...a,k];showQ()}else{st.ans[q.id]=i;showQ();save();live();setTimeout(()=>{if(QS[st.step]===q&&!($('#note').value.trim()))go(1)},260)}save();live()}
+function go(d){st.notes[QS[st.step].id]=$('#note').value.trim();if(d>0&&st.step===NQ-1){finish();return}st.step=clamp(st.step+d,0,NQ-1);save();showQ();live()}
+let sampleFn=null;
+(async()=>{try{if(window.claude&&window.claude.use)sampleFn=await window.claude.use('sample')}catch(e){sampleFn=null}})();
+async function finish(){st.done=true;st.tuned=null;save();build();render();$('#res').scrollIntoView({block:'start'});
+const notes=QS.filter(q=>(st.notes[q.id]||'').trim());if(!notes.length){st.ai=null;save();aiNote();return}
+if(!sampleFn){st.ai=null;save();aiNote();return}
+const nt=$('#aiNote');nt.hidden=false;nt.textContent='직접 입력을 해석하는 중';
+const prompt=`이민 국가 추천 사이트의 설문 답변을 점수 설정으로 바꿔 주세요. JSON만 답하세요.
+설정 키: mode("final"|"bridge"), w(각 0~3 정수: job 일자리, pow 국력, inn 혁신, war 전쟁 안전, safe 치안, demo 인구구조, open 외국인 수용, visa 진입 쉬움, tax 세금 부담이 낮은 것), r(각 0|1: isl 섬나라 제외, crime 치안 매우 나쁜 곳 제외, war 전쟁 영향권 제외, big 강대국만), ex{regs:[${EXR.map(e=>'"'+e[0]+'"').join(',')} 중에서], cs:[국가 코드]}, summary(한국어 한두 문장, 직접 적은 답을 어떻게 반영했는지).
+직접 적은 답에서 드러난 것만 넣고 나머지 키는 빼세요.
+국가 코드: ${D.map(c=>c.c+'='+c.n).join(', ')}
+답변:
+${QS.map(q=>{const a=st.ans[q.id];const ch=q.multi?(Array.isArray(a)?a.map(k=>EXR.find(e=>e[0]===k)[1]).join(', '):''):(a!==undefined?q.o[a].l:'');return `- ${q.t} / 고른 보기: ${ch||'없음'} / 직접 적은 답: ${st.notes[q.id]||'없음'}`}).join('\n')}
+형식 예: {"w":{"safe":3},"r":{"crime":1},"ex":{"regs":[],"cs":["CA"]},"summary":"..."}`;
+try{const v=await sampleFn.json(prompt,{modelTier:'quick'});if(v&&typeof v==='object'){st.ai={patch:{mode:v.mode,w:v.w,r:v.r,ex:v.ex},summary:typeof v.summary==='string'?v.summary.slice(0,300):'',by:'claude'};save();build();render()}}
+catch(e){st.ai=null}aiNote()}
+function aiNote(){const nt=$('#aiNote'),has=QS.some(q=>(st.notes[q.id]||'').trim());
+if(!has){nt.hidden=true;return}nt.hidden=false;
+nt.textContent=st.ai&&st.ai.by==='claude'?`직접 입력 해석: ${st.ai.summary||'기준에 반영함'}`:'직접 입력은 키워드로 해석함'}
+
+function summary(){const c=st.cfg,w=c.w,L=['상관없음','조금','보통','매우'],out=[`<span>${ML[c.mode]}</span>`];
+for(const k of ['job','pow','inn','war','safe','demo','open','visa','tax'])if(w[k]>0&&!(c.mode==='bridge'&&k==='pow'))out.push(`<span>${CL[k].l} ${L[w[k]]}</span>`);
+for(const u of RU)if(c.r[u.k]&&!(u.only&&u.only!==c.mode))out.push(`<span class="ex">${u.l}</span>`);
+const ex=[...c.ex.regs.map(r=>EXR.find(e=>e[0]===r)[1]),...c.ex.cs.map(x=>BY[x].n)];if(ex.length)out.push(`<span class="ex">제외: ${esc(ex.join(', '))}</span>`);
+$('#sum').innerHTML=out.join('')}
+
+function tuneUI(){const c=st.cfg,m=c.mode;$('#mFinal').setAttribute('aria-pressed',m==='final');$('#mBridge').setAttribute('aria-pressed',m==='bridge');
+$('#rules').innerHTML=RU.filter(u=>!u.only||u.only===m).map(u=>`<label class="rule"><input type="checkbox" id="r-${u.k}" data-r="${u.k}" ${c.r[u.k]?'checked':''}><span><b>${esc(u.l)}</b><br><span class="small">${esc(u.d)}</span></span></label>`).join('');
+$('#weights').innerHTML=CR.filter(k=>k.k!=='br'&&!(m==='bridge'&&k.k==='pow')).map(k=>`<div class="wt"><span>${esc(k.l)}</span><div class="lv" role="group" aria-label="${esc(k.l)} 중요도">${['무시','조금','보통','매우'].map((l,i)=>`<button type="button" data-w="${k.k}" data-v="${i}" aria-pressed="${c.w[k.k]===i}">${l}</button>`).join('')}</div></div>`).join('')}
+const tune=fn=>{st.tuned=st.tuned||{w:{},r:{}};fn(st.tuned);save();build();render()};
+
+function live(){build();board();table();cards();special();chart();stats()}
+function render(){$('#ob').hidden=st.done;$('#res').hidden=!st.done;if(st.done){summary();tuneUI();explain()}live()}
+function board(){const m=st.cfg.mode,R=rank(m).filter(x=>!x.f.length).slice(0,10),top=R[0]?R[0].s:1;
+$('#boardSub').textContent=`${ML[m]} 기준, 적합도 상위 10개국 (100점 만점)`;
+$('#board').innerHTML=R.map((x,i)=>`<button type="button" class="brow${i?'':' first'}" data-open="${x.c.c}"><span class="rk">${i+1}</span><span>${flag(x.c,18)}${esc(x.c.n)}</span><span><i style="width:${Math.max(4,Math.round(x.s/Math.max(top,1)*100))}%"></i></span><b>${x.s}</b></button>`).join('')||'<p class="small">조건을 통과한 나라 없음</p>'}
+function stats(){const base=D.filter(c=>!c.base);$('#kAll').textContent=D.length;
+$('#kPass').textContent=base.filter(c=>!fails(c,st.cfg.mode).length).length;$('#kWar').textContent=base.filter(c=>c.war>=5).length;$('#kIsl').textContent=base.filter(c=>c.isl).length;$('#kTax0').textContent=base.filter(c=>c.tax===0).length}
+
+const COLS=[
+{k:'n',l:'국가',v:c=>c.n},{k:'r',l:'지역',v:c=>REGS.indexOf(c.r)},{k:'demo',l:'인구 피라미드',v:c=>wa(c)},{k:'gov',l:'정치 형태',v:c=>c.gov},
+{k:'pol',l:'양극화',v:c=>c.pol},{k:'gii',l:'혁신 GII',v:c=>c.gii??999,num:1},{k:'gpi',l:'평화 GPI',v:c=>c.gpi??999,num:1},
+{k:'war',l:'전쟁 위험',v:c=>c.war},{k:'safe',l:'치안',v:c=>c.safe},{k:'open',l:'외국인 수용',v:c=>c.open},{k:'job',l:'일자리',v:c=>c.job},{k:'tax',l:'소득세',v:c=>c.tax??999,num:1},{k:'fit',l:'적합도',v:c=>c.base?-1:fit(c,st.cfg.mode),num:1}];
+let sort={k:'fit',d:-1},reg='전체',q='',tp=0;const PER=25;
+const LVR=['매우 낮음','낮음','보통','높음','매우 높음'],LVG=['매우 나쁨','나쁨','보통','좋음','매우 좋음'];
+const dots=(n,k)=>{const lab=(k==='r'?LVR:LVG)[n-1];return `<span class="mt" role="img" aria-label="${lab}" title="${lab} (5점 중 ${n})"><i style="width:${n*20}%;background:color-mix(in srgb,var(--${k==='r'?'risk':'good'}) ${30+14*n}%,var(--panel))"></i></span>`};
+let view='tbl';
+const SORTS=[['fit',-1,'적합도 높은 순'],['n',1,'이름 순'],['gii',1,'혁신 순위 높은 순'],['gpi',1,'평화 순위 높은 순'],['tax',1,'소득세 낮은 순'],['job',-1,'일자리 많은 순'],['safe',-1,'치안 좋은 순']];
+function listRows(){const col=COLS.find(c=>c.k===sort.k),only=$('#onlyPass').checked,m=st.cfg.mode;
+let rows=D.filter(c=>(reg==='전체'||c.r===reg)&&(!q||(c.n+c.en).toLowerCase().includes(q)));
+if(only)rows=rows.filter(c=>!c.base&&!fails(c,m).length);
+return rows.sort((a,b)=>{const x=col.v(a),y=col.v(b);return (typeof x==='string'?x.localeCompare(y,'ko'):x-y)*sort.d})}
+function sortSel(){$('#csort').innerHTML=SORTS.map(([k,d,l])=>`<option value="${k}|${d}"${sort.k===k&&sort.d===d?' selected':''}>${l}</option>`).join('')+(SORTS.some(([k,d])=>sort.k===k&&sort.d===d)?'':'<option selected>표 머리글 기준</option>')}
+function table(){sortSel();
+$('#thr').innerHTML=COLS.map(c=>`<th scope="col" data-s="${c.k}" class="${c.num?'num':''}" ${sort.k===c.k?`aria-sort="${sort.d>0?'ascending':'descending'}"`:''} tabindex="0">${c.l}${sort.k===c.k?(sort.d>0?' ↑':' ↓'):''}</th>`).join('');
+const m=st.cfg.mode;let rows=listRows();
+const np=Math.max(1,Math.ceil(rows.length/PER));tp=clamp(tp,0,np-1);const total=rows.length;rows=rows.slice(tp*PER,tp*PER+PER);
+$('#tpager').innerHTML=np>1?`<button type="button" data-tp="${tp-1}" ${tp===0?'disabled':''} aria-label="이전 페이지">←</button>${[...Array(np)].map((_,i)=>`<button type="button" data-tp="${i}" ${i===tp?'aria-current="page"':''}>${i+1}</button>`).join('')}<button type="button" data-tp="${tp+1}" ${tp===np-1?'disabled':''} aria-label="다음 페이지">→</button><span>${total}개국 중 ${tp*PER+1}~${Math.min(total,tp*PER+PER)}</span>`:`<span>${total}개국</span>`;
+$('#tb').innerHTML=rows.map(c=>{const f=c.base?[]:fails(c,m);return `<tr data-open="${c.c}" tabindex="0" class="${f.length?'off':''}">
+<td><span class="nm">${flag(c,22)}${esc(c.n)}</span>${c.base?'<span class="tag base">현재 위치</span>':''}${f.length?`<br><span class="tag" style="margin:4px 0 0">${esc(f[0])}</span>`:''}</td>
+<td>${esc(c.r)}</td><td><div class="pcell">${pyrSVG(c,70,46,0)}<span>${esc(pyr(c))}<br><span class="small">근로 ${wa(c)}%</span></span></div></td>
+<td>${esc(c.gov)}<br><span class="small">${esc(c.reg)}</span></td><td>${dots(c.pol,'r')}</td>
+<td class="num">${c.gii??'–'}</td><td class="num">${c.gpi??'–'}</td>
+<td>${dots(c.war,'r')}</td><td>${dots(c.safe,'g')}</td><td>${dots(c.open,'g')}</td><td>${dots(c.job,'g')}</td><td class="num">${c.tax==null?'–':c.tax+'%'}${c.spec?'<br><span class="taxtag">특례</span>':''}</td><td class="num"><b>${c.base?'–':fit(c,m)}</b></td></tr>`}).join('')||'<tr><td colspan="13">조건에 맞는 나라가 없어요.</td></tr>'}
+
+
+const SP=[
+{k:'ban',l:'이주 불가 국가',d:'한국 국민 방문 불가 또는 한국 정부 여행금지 국가. 추천 순위에서 항상 제외.',cs:{KP:'한국 국민 방문 불가, 통일부 승인 필요',AF:'탈레반 집권, 여행금지국',SY:'정권 붕괴 후 혼란, 여행금지국',YE:'내전 중, 여행금지국',SD:'내전 중, 여행금지국',SS:'무력 충돌, 여행금지국',SO:'무장 테러, 여행금지국',LY:'정부 분열, 여행금지국',HT:'갱단이 수도 장악, 여행금지국',UA:'전쟁 중, 여행금지국',IQ:'대부분 지역 여행금지'}},
+{k:'closed',l:'닫힌 나라',d:'여행은 가능하지만 외국인 정착이 사실상 불가능한 나라.',cs:{TM:'초청장 없이는 비자도 어려운 폐쇄 국가',ER:'선거 없는 일당 체제, 무기한 국가 복무',BT:'외국인 정착 제도가 사실상 없음',VA:'거주는 성직자와 직원만 가능'}},
+{k:'gulf',l:'이주노동자 국가',d:'인구의 상당수가 외국인 노동자인 걸프 산유국. 소득세 없음, 체류는 고용에 종속, 시민권 취득은 사실상 불가.',cs:{AE:'인구 약 88%가 외국인',QA:'인구 대부분이 외국인',KW:'인구 약 3분의 2가 외국인, 감축 정책 중',BH:'인구 절반가량이 외국인',SA:'인구 약 40%가 외국인',OM:'인구 약 40%가 외국인'}},
+{k:'haven',l:'조세피난처',d:'개인소득세가 없거나 매우 낮은 소국. 거주 요건이 까다롭고 생활비가 높음.',cs:{MC:'소득세 없음, 큰 재산 증명 필요',BS:'소득세 없음',KN:'소득세 없음',AG:'소득세 없음',VU:'소득세 없음',AD:'최고세율 10%',LI:'낮은 세율의 금융 강소국'}},
+{k:'cbi',l:'시민권을 파는 나라',d:'투자나 기부로 시민권을 주는 섬나라.',cs:{KN:'1984년 세계 최초 도입',AG:'카리브해 투자 시민권',DM:'시민권 판매가 재정의 큰 몫',GD:'미국 E-2 조약국, 미국 투자비자 신청 가능',LC:'카리브해 투자 시민권',VU:'시민권 판매로 EU와 마찰'}},
+{k:'micro',l:'초소국',d:'인구 수만 명 이하. 소득과 치안은 높지만 일자리와 거주 허가가 매우 제한적.',cs:{VA:'인구 약 800명',TV:'인구 약 1만 명',NR:'인구 약 1만 2천 명',PW:'인구 약 1만 8천 명',SM:'인구 약 3만 4천 명',MC:'인구 약 4만 명',LI:'인구 약 4만 명',AD:'인구 약 8만 명'}},
+{k:'cofa',l:'미국 자유연합국',d:'미국과 자유연합협정(COFA) 체결. 국민은 비자 없이 미국 거주와 취업 가능. 외국인의 시민권 취득은 사실상 불가.',cs:{MH:'미국 달러 사용',FM:'미국 달러 사용',PW:'미국 달러 사용, 대만 수교국'}},
+{k:'climate',l:'기후 위기 섬나라',d:'해수면 상승으로 국토 상실 위기에 놓인 산호섬 국가.',cs:{TV:'호주와 기후 이주 협정',KI:'국토 대부분이 해발 수 미터 이하',MV:'세계에서 가장 낮은 나라 중 하나',MH:'산호섬 국가'}},
+{k:'junta',l:'군정 국가',d:'쿠데타나 군의 권력 장악 이후 군 출신이 통치하는 나라. 정책 급변과 외국인 활동 제한 위험.',cs:{MM:'2021년 쿠데타, 내전 중',ML:'쿠데타 후 군정, 무장세력 확산',BF:'2022년 두 차례 쿠데타',NE:'2023년 쿠데타',GN:'2021년 쿠데타 후 군 출신 집권',GA:'2023년 쿠데타 후 군 지도자 당선',MG:'2025년 군 권력 장악',GW:'2025년 군 권력 장악',SD:'군정, 내전 중'}},
+{k:'old',l:'초고령 국가',d:'65세 이상 인구가 24% 이상.',auto:c=>c.o>=24&&c.c!=='VA',note:c=>`65세 이상 약 ${c.o}%`},
+{k:'young',l:'아주 젊은 나라',d:'14세 이하 인구가 44% 이상.',auto:c=>c.a>=44,note:c=>`14세 이하 약 ${c.a}%`}];
+SP.forEach(g=>{if(g.auto){g.cs={};D.filter(g.auto).sort((a,b)=>g.k==='old'?b.o-a.o:b.a-a.a).forEach(c=>g.cs[c.c]=g.note(c))}});
+const BAN=new Set(Object.keys(SP[0].cs));
+const spOf=c=>SP.filter(g=>c.c in g.cs);
+let stab='ban';
+function special(){
+$('#stabs').innerHTML=SP.map(g=>`<button type="button" data-sp="${g.k}" aria-pressed="${g.k===stab}">${esc(g.l)} ${Object.keys(g.cs).length}</button>`).join('');
+const g=SP.find(x=>x.k===stab);
+$('#spanel').innerHTML=`<h3>${esc(g.l)}</h3><p class="sd">${esc(g.d)}</p><div class="stiles">${Object.entries(g.cs).map(([k,n])=>{const c=BY[k];return c?`<button type="button" class="stile" data-open="${c.c}">${pyrSVG(c,40,36,0)}<span style="color:var(--ink)"><b>${flag(c,20)}${esc(c.n)}</b><span>${esc(n||c.en)}</span></span></button>`:''}).join('')}</div>`}
+let cshow=12;
+function cards(){
+const cl=listRows(),mb=$('#moreCards');mb.hidden=cl.length<=cshow;mb.textContent=`${cl.length-cshow}개국 더 보기`;if(!cl.length){$('#cards').innerHTML='<p>조건에 맞는 나라가 없어요.</p>';return}
+$('#cards').innerHTML=cl.slice(0,cshow).map(c=>{const f=c.base?[]:fails(c,st.cfg.mode);return `<article class="card"><div class="chead"><div><h3>${flag(c,28)}${esc(c.n)}<small>${esc(c.en)}</small></h3>
+<div class="meta"><span>${esc(pyr(c))}</span><span>${esc(c.reg)}</span><span>혁신 ${c.gii?c.gii+'위':'–'}</span><span>평화 ${c.gpi?c.gpi+'위':'–'}</span><span>소득세 ${c.tax==null?'확인 필요':'최고 '+c.tax+'%'}</span>${c.base?'<span>현재 위치</span>':f.length?`<span style="color:var(--brown)">${esc(f.join(', '))}</span>`:'<span>기준 통과</span>'}</div></div><div class="pbadge">${pyrSVG(c,64,56,0)}</div></div>
+<p>${esc(c.feat)}</p><div class="pc"><div><b>장점</b><ul>${c.pro.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div><div><b>단점</b><ul>${c.con.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>
+<button type="button" class="more" data-open="${c.c}">카테고리별로 자세히</button></article>`}).join('')}
+
+function openC(code){const c=BY[code];if(!c)return;
+$('#dTitle').innerHTML=`${flag(c,40)}${esc(c.n)}<small>${esc(c.en)}, ${esc(c.r)}${c.base?', 비교 기준(현재 위치)':''}</small>`;
+const f=c.base?[]:fails(c,st.cfg.mode);
+const chk=[...RU.map(u=>({l:u.l,bad:st.cfg.r[u.k]&&!(u.only&&u.only!==st.cfg.mode)&&u.f(c),on:st.cfg.r[u.k]&&!(u.only&&u.only!==st.cfg.mode),y:u.y}))].filter(x=>x.on).map(x=>`<li class="${x.bad?'n':'y'}">${esc(x.l)}${x.bad?', '+esc(x.y):''}</li>`).join('')+(f.filter(x=>/제외|서유럽/.test(x)).map(x=>`<li class="n">${esc(x)}</li>`).join(''));
+$('#dBody').innerHTML=`${spOf(c).length?`<div class="sbadge" style="margin-top:14px">${spOf(c).map(g=>`<span class="${g.k==='ban'?'ban':''}">${esc(g.l)}</span>`).join('')}</div>`:''}<div class="cats">
+<div class="cat" style="grid-column:1/-1"><h4>인구 피라미드</h4><div class="bigpyr"><div>${pyrSVG(c,Math.max(240,Math.min(560,(document.documentElement.clientWidth||600)-(document.documentElement.clientWidth<600?70:340))),210,1)}</div><dl class="kv" style="grid-template-columns:6em minmax(0,1fr)"><dt>형태</dt><dd><b>${esc(pyr(c))}</b></dd><dt>인구</dt><dd>약 ${c.pop>=100?Math.round(c.pop):c.pop}백만 명</dd><dt>0~14세</dt><dd>약 ${c.a}%</dd><dt>15~64세</dt><dd>약 ${wa(c)}%</dd><dt>65세 이상</dt><dd>약 ${c.o}%</dd></dl></div><p class="small" style="margin-top:6px">근사치. 가운데 숫자는 나이. 노랑 0~10대, 파랑 20~60대, 분홍 70대 이상.</p></div>
+<div class="cat"><h4>특징</h4><p>${esc(c.feat)}</p></div>
+<div class="cat"><h4>정치</h4><dl class="kv"><dt>정치 형태</dt><dd>${esc(c.gov)}</dd><dt>체제</dt><dd>${esc(c.reg)}</dd><dt>양극화</dt><dd>${dots(c.pol,'r')} ${['낮음','낮은 편','보통','높음','매우 높음'][c.pol-1]}${c.reg==='권위주의'?' (선거 경쟁 제한)':''}</dd></dl></div>
+<div class="cat"><h4>경제, 일자리, 혁신</h4><dl class="kv"><dt>일자리, 사업</dt><dd>${dots(c.job,'g')} ${esc(CL.job.t(c))}</dd><dt>국력</dt><dd>${esc(CL.pow.t(c))}</dd><dt>혁신성</dt><dd>${esc(CL.inn.t(c))}</dd></dl></div>
+<div class="cat"><h4>안전</h4><dl class="kv"><dt>전쟁, 내전</dt><dd>${dots(c.war,'r')} ${esc(CL.war.t(c))}</dd><dt>치안</dt><dd>${dots(c.safe,'g')} ${esc(CL.safe.t(c))}</dd><dt>평화지수</dt><dd>${c.gpi?`163개국 중 ${c.gpi}위`:'지수 미포함'}</dd></dl></div>
+<div class="cat"><h4>외국인과 비자</h4><dl class="kv"><dt>외국인 수용</dt><dd>${dots(c.open,'g')} ${esc(CL.open.t(c))}</dd><dt>진입 난이도</dt><dd>${esc(CL.visa.t(c))}</dd><dt>경로</dt><dd>${esc(c.visa)}</dd><dt>미국행 다리</dt><dd>${esc(CL.br.t(c))}</dd></dl></div>
+<div class="cat"><h4>세금</h4><dl class="kv"><dt>소득세 최고</dt><dd>${c.tax==null?'확인 필요':c.tax+'%'}</dd><dt>외국인 특례</dt><dd>${esc(c.taxN||'특별한 제도 없음')}</dd><dt>한국과 조세조약</dt><dd>${c.dta===1?'있음(이중과세 방지)':c.dta===0?'없음':'해당 없음'}</dd></dl></div>
+<div class="cat"><h4>장점</h4><ul class="list">${c.pro.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+<div class="cat"><h4>단점</h4><ul class="list">${c.con.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+<div class="cat"><h4>지금 기준 판정</h4>${chk?`<ul class="chkl">${chk}</ul>`:'<p>적용된 조건 없음</p>'}</div>
+<div class="cat"><h4>적합도</h4>${c.base?'<p>비교 기준 (점수 없음)</p>':`<dl class="kv"><dt>최종 정착지</dt><dd><b>${fit(c,'final')}</b>점${fails(c,'final').length?' (기준 탈락)':''}</dd><dt>중간 다리</dt><dd>${c.c==='US'?'목적지':`<b>${fit(c,'bridge')}</b>점${fails(c,'bridge').length?' (기준 탈락)':''}`}</dd></dl>`}</div>
+</div>`;
+const d=$('#dlg');if(d.showModal){if(!d.open)d.showModal()}else d.setAttribute('open','');$('#dBody').scrollTop=0}
+
+const tip=$('#tip'),svg=$('#chart'),fig=$('#fig');
+const xv=c=>.55*((5-c.war)/4)+.45*(c.gpi?1-(c.gpi-1)/162:(c.safe-1)/4);
+const yv=c=>.4*CL.inn.s(c)+.3*(c.pow-1)/4+.3*(c.job-1)/4;
+const AX=[{k:'safe',l:'안전',f:xv,lo:'위험',hi:'안전'},{k:'opp',l:'기회',f:yv,lo:'기회 적음',hi:'기회 많음'},{k:'tax',l:'세금 부담 낮음',f:c=>CL.tax.s(c),lo:'세금 무거움',hi:'세금 가벼움'},{k:'demo',l:'인구구조(항아리형)',f:demoS,lo:'불균형',hi:'항아리형'},{k:'open',l:'외국인 수용',f:c=>(c.open-1)/4,lo:'배타적',hi:'개방적'},{k:'job',l:'일자리',f:c=>(c.job-1)/4,lo:'적음',hi:'많음'},{k:'fit',l:'내 적합도',f:c=>fit(c,st.cfg.mode)/100,lo:'낮음',hi:'높음'}];
+let axX='safe',axY='opp';
+const jit=c=>{let h=0;for(const ch of c.c)h=(h*31+ch.charCodeAt(0))%997;return (h/997-.5)*.03};
+const tcol=c=>c.tax==null?'var(--tnull)':c.tax<20?'var(--t1)':c.tax<40?'var(--t2)':'var(--t3)';
+function chart(){const W=fig.clientWidth,H=fig.clientHeight;if(!W||!H)return;
+const mL=W<520?28:44,mR=18,mT=26,mB=W<520?40:46,iw=W-mL-mR,ih=H-mT-mB,X=v=>mL+clamp(v,0,1)*iw,Y=v=>mT+(1-clamp(v,0,1))*ih,m=st.cfg.mode;
+const ax=AX.find(a=>a.k===axX),ay=AX.find(a=>a.k===axY);
+const wf=winner('final'),wb=winner('bridge'),wm=winner(m),picks=new Set([wm&&wm.c.c]);
+let g='';for(let i=0;i<=4;i++){const v=i/4;g+=`<line x1="${X(v)}" x2="${X(v)}" y1="${mT}" y2="${mT+ih}" stroke="var(--rule)"/><line x1="${mL}" x2="${mL+iw}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--rule)"/>`}
+g+=`<line x1="${X(.5)}" x2="${X(.5)}" y1="${mT}" y2="${mT+ih}" stroke="var(--brown)" stroke-dasharray="4 4" opacity=".6"/><line x1="${mL}" x2="${mL+iw}" y1="${Y(.5)}" y2="${Y(.5)}" stroke="var(--brown)" stroke-dasharray="4 4" opacity=".6"/>`;
+g+=`<text x="${mL+iw}" y="${mT+ih+30}" text-anchor="end">${esc(ax.hi)} →</text><text x="${mL}" y="${mT+ih+30}">← ${esc(ax.lo)}</text><text x="${mL+iw/2}" y="${mT+ih+30}" text-anchor="middle" style="font-weight:700">${esc(ax.l)}</text><text x="${mL-6}" y="${mT-10}">↑ ${esc(ay.l)}(위로 갈수록 ${esc(ay.hi)})</text>`;
+const pts=D.map(c=>({c,x:X(ax.f(c)+jit(c)),y:Y(ay.f(c)+jit({c:c.c+'y'})),r:Math.min(20,3+Math.sqrt(c.pop)*(W<520?.36:.48)),f:c.base?[]:fails(c,m)})).sort((a,b)=>b.r-a.r);
+for(const p of pts){const c=p.c,pk=picks.has(c.c),off=p.f.length&&!pk;
+const stroke=pk?'var(--route)':c.base?'var(--ink)':off?'var(--brown)':'var(--sea)',sw=pk?3:c.base?2:off?1.4:1;
+g+=`<circle class="dot" data-open="${c.c}" data-tip="${c.c}" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.r.toFixed(1)}" fill="${tcol(c)}" fill-opacity="${off?.28:.92}" stroke="${stroke}" stroke-width="${sw}" ${off?'stroke-dasharray="3 2"':''}/>`}
+const want=W<520?['US','KR',wm&&wm.c.c,'AE','CN','MX']:['US','KR',wm&&wm.c.c,wf&&wf.c.c,wb&&wb.c.c,'AE','SA','CN','PL','MX','MY','VN','IN','CA','IL','JP','SG','CH','NG','BR','UZ','DE','TW','RU','UA','IR','FR','SE','HU','VE','PK','FI','PA','GE','PY'];
+const placed=[],ov=(a,b)=>a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h,seen=new Set();
+for(const code of want){if(!code||seen.has(code))continue;seen.add(code);const p=pts.find(q=>q.c.c===code);if(!p)continue;
+const t=p.c.n,w=t.length*13+4,h=16,pk=picks.has(code);
+for(const [x,y] of [[p.x+p.r+4,p.y-h/2],[p.x-p.r-4-w,p.y-h/2],[p.x-w/2,p.y-p.r-h-2],[p.x-w/2,p.y+p.r+2]]){const b={x,y,w,h};if(x<2||x+w>W-2||y<2||y+h>H-mB+14)continue;if(placed.some(o=>ov(o,b)))continue;if(pts.some(q=>q!==p&&Math.hypot(q.x-(x+w/2),q.y-(y+h/2))<q.r*.6))continue;placed.push(b);
+g+=`<text x="${x+2}" y="${y+12}" style="font-weight:${pk?800:600}${pk?';fill:var(--route)':''}">${esc(t)}</text>`;break}}
+svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('aria-label',`가로 ${ax.l}, 세로 ${ay.l}, 점 색은 소득세 부담`);svg.innerHTML=g}
+const axOpts=()=>{for(const [id,cur] of [['#ax',axX],['#ay',axY]])$(id).innerHTML=AX.map(a=>`<option value="${a.k}"${a.k===cur?' selected':''}>${esc(a.l)}</option>`).join('')};
+axOpts();$('#ax').addEventListener('change',e=>{axX=e.target.value;chart()});$('#ay').addEventListener('change',e=>{axY=e.target.value;chart()});
+const ro=new ResizeObserver(()=>chart());ro.observe(fig);
+fig.addEventListener('pointermove',e=>{const t=e.target.closest('[data-tip]');if(!t){tip.style.display='none';return}const c=BY[t.dataset.tip],f=c.base?[]:fails(c,st.cfg.mode);
+tip.innerHTML=`<b>${esc(c.n)}</b><br>${esc(pyr(c))}, 혁신 ${c.gii??'–'}위, 평화 ${c.gpi??'–'}위<br>소득세 ${c.tax==null?'확인 필요':'최고 '+c.tax+'%'}${c.taxN?'<br><span class="small">'+esc(c.taxN)+'</span>':''}<br>${c.base?'현재 위치':f.length?'<span style="color:var(--brown)">'+esc(f.join(', '))+'</span>':'적합도 '+fit(c,st.cfg.mode)+'점'}`;
+const r=fig.getBoundingClientRect();let x=e.clientX-r.left+14,y=e.clientY-r.top+14;tip.style.display='block';if(x+tip.offsetWidth>r.width)x=e.clientX-r.left-tip.offsetWidth-14;if(y+tip.offsetHeight>r.height)y=e.clientY-r.top-tip.offsetHeight-14;tip.style.left=x+'px';tip.style.top=y+'px'});
+fig.addEventListener('pointerleave',()=>tip.style.display='none');
+
+document.addEventListener('click',e=>{
+const op=e.target.closest('.opt');if(op){pick(+op.dataset.i);return}
+const o=e.target.closest('[data-open]');if(o){openC(o.dataset.open);return}
+const w=e.target.closest('[data-w]');if(w){tune(t=>{t.w[w.dataset.w]=+w.dataset.v});return}
+const sp=e.target.closest('[data-sp]');if(sp){stab=sp.dataset.sp;special();return}
+const tpb=e.target.closest('[data-tp]');if(tpb){tp=+tpb.dataset.tp;table();$('#list').scrollIntoView({block:'start'});return}
+const rg=e.target.closest('[data-g]');if(rg){reg=rg.dataset.g;tp=0;cshow=12;regChips();table();cards();return}
+const th=e.target.closest('th[data-s]');if(th){const k=th.dataset.s;tp=0;cshow=12;sort=sort.k===k?{k,d:-sort.d}:{k,d:['n','r','gov','gii','gpi','war','pol','tax'].includes(k)?1:-1};table()}});
+document.addEventListener('keydown',e=>{const t=e.target;
+if(!$('#ob').hidden&&!t.matches('textarea,input')&&/^[1-9]$/.test(e.key)){const i=+e.key-1;if(QS[st.step].o[i]){e.preventDefault();pick(i)}return}
+if(e.key!=='Enter'&&e.key!==' ')return;if(t.matches('tr[data-open]')){e.preventDefault();openC(t.dataset.open)}else if(t.matches('th[data-s]')){e.preventDefault();t.click()}});
+document.addEventListener('change',e=>{const r=e.target.dataset&&e.target.dataset.r;if(r)tune(t=>{t.r[r]=e.target.checked?1:0})});
+$('#note').addEventListener('input',e=>{st.notes[QS[st.step].id]=e.target.value;save();live()});
+$('#next').onclick=()=>go(1);$('#prev').onclick=()=>go(-1);
+$('#skip').onclick=()=>{st.notes[QS[st.step].id]=$('#note').value.trim();finish()};
+$('#redo').onclick=()=>{st.done=false;st.step=0;st.tuned=null;save();render();showQ();$('#start').scrollIntoView({block:'start'})};
+$('#mFinal').onclick=()=>tune(t=>{t.mode='final'});$('#mBridge').onclick=()=>tune(t=>{t.mode='bridge'});
+$('#dClose').onclick=()=>$('#dlg').close?$('#dlg').close():$('#dlg').removeAttribute('open');
+$('#dlg').addEventListener('click',e=>{if(e.target===$('#dlg'))$('#dlg').close()});
+$('#q').addEventListener('input',e=>{q=e.target.value.trim().toLowerCase();tp=0;cshow=12;table();cards()});
+$('#moreCards').addEventListener('click',()=>{cshow+=12;cards()});
+const setView=v=>{view=v;$('#vTbl').setAttribute('aria-pressed',v==='tbl');$('#vCard').setAttribute('aria-pressed',v==='card');$('#tblView').hidden=v!=='tbl';$('#cardView').hidden=v!=='card'};
+$('#vTbl').onclick=()=>setView('tbl');$('#vCard').onclick=()=>setView('card');
+$('#csort').addEventListener('change',e=>{const [k,d]=e.target.value.split('|');if(!d)return;sort={k,d:+d};tp=0;cshow=12;table();cards()});
+$('#onlyPass').addEventListener('change',()=>{tp=0;cshow=12;table();cards()});
+function regChips(){$('#regs').innerHTML=['전체',...REGS].map(r=>`<button type="button" data-g="${r}" aria-pressed="${r===reg}">${r}</button>`).join('')}
+
+const PAGES=['start','map','list','special','method'];
+const PL={start:'나라 찾기',map:'지도',list:'국가 목록',special:'특별 국가',method:'기준과 출처'};
+PAGES.forEach((p,i)=>{const w=document.querySelector('#'+p+'>.wrap');if(!w)return;const n=document.createElement('nav');n.className='pager';n.setAttribute('aria-label','페이지 이동');
+n.innerHTML=(i>0?`<a href="#${PAGES[i-1]}">← ${PL[PAGES[i-1]]}</a>`:'')+(i<PAGES.length-1?`<a class="nx" href="#${PAGES[i+1]}">${PL[PAGES[i+1]]} →</a>`:'');w.appendChild(n)});
+function route(){let h=location.hash.slice(1);if(h==='compare'||h==='atlas')h='list';if(!PAGES.includes(h))h='start';
+for(const p of PAGES)$('#'+p).hidden=p!==h;
+document.querySelectorAll('[data-for]').forEach(w=>w.hidden=w.dataset.for!==h);
+document.querySelectorAll('.nav a').forEach(a=>{if(a.getAttribute('href')==='#'+h)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+window.scrollTo(0,0);if(h==='map')requestAnimationFrame(chart)}
+window.addEventListener('hashchange',route);
+regChips();build();showQ();render();aiNote();route();
+}
+</script>
+</body>
+</html>
