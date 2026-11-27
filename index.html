@@ -299,7 +299,7 @@ main>section{min-height:calc(100dvh - 160px)}
 <main>
 <section class="band sea" id="start"><canvas class="globe" id="globe" aria-hidden="true"></canvas><div class="wrap">
 <h1>이민 가이드북</h1>
-<p class="lede" style="color:var(--ink)">196개국 비교와 국가 추천. 질문 12개에 답하면 조건에 맞는 나라가 나옵니다.</p>
+<p class="lede" style="color:var(--ink)">196개국 비교와 국가 추천. 질문에 답하면 조건에 맞는 나라가 나옵니다.</p>
 <div class="start">
 <div>
 <div class="panel" id="ob">
@@ -316,7 +316,7 @@ main>section{min-height:calc(100dvh - 160px)}
 <p class="note" id="aiNote" hidden></p>
 <details class="tune"><summary>기준 세부 조정</summary>
 <div class="seg" role="group" aria-label="추천 종류"><button type="button" id="mFinal">최종 정착지</button><button type="button" id="mBridge">거쳐 갈 나라</button></div>
-<div id="rules" style="margin-top:12px"></div>
+<div id="destWrap" class="sortl" style="margin-top:12px"></div><div id="rules" style="margin-top:12px"></div>
 <h3 style="font-size:15px;margin:16px 0 4px">중요도</h3><div id="weights"></div>
 </details>
 <div id="result" aria-live="polite" style="margin-top:22px"></div>
@@ -378,6 +378,7 @@ main>section{min-height:calc(100dvh - 160px)}
 <div class="cats" style="margin-top:16px">
 <div class="cat"><h4>공개 지표</h4><p>혁신: WIPO 세계혁신지수(GII) 2026 순위, 139개국.<br>평화: 세계평화지수(GPI) 2026 순위, 163개국.<br>연령 구성: UN 세계인구전망 2024의 2025년 추정치(반올림).<br>지수에 없는 나라는 –로 표시.</p></div>
 <div class="cat"><h4>인구 피라미드</h4><p>0~14세, 15~64세, 65세 이상 비중을 5세 단위로 나눠 그린 근사치. 실제 5세 단위 통계가 아니며 남녀 구분 없음. 노랑 0~10대, 파랑 20~60대, 분홍 70대 이상.</p></div>
+<div class="cat"><h4>거쳐 갈 나라 점수</h4><p>최종 정착지가 미국이면 편집 평가인 미국행 다리 가치를 씁니다. 다른 나라면 이동 제도(EU 블루카드, 시민권 취득 뒤 자유 이주 협정 등) 45%, 일자리와 혁신 30%, 같은 지역 10%, 한국인 진입 쉬움 15%로 계산합니다. 정하지 않았으면 일자리와 혁신 60%, 진입 쉬움 40%입니다.</p></div>
 <div class="cat"><h4>편집 평가 (1~5점)</h4><p>양극화, 전쟁과 내전 위험, 치안, 외국인 수용도, 일자리와 사업 기회, 국력, 미국행 다리 가치, 진입 난이도. 위 지표와 2026년 11월까지의 보도를 바탕으로 한 판단. 권위주의 국가는 선거 경쟁이 제한돼 양극화가 낮게 나옴.</p></div>
 <div class="cat"><h4>적합도</h4><p>항목별 점수(0~1)를 중요도(0~3)로 가중평균해 100점으로 환산. 꼭 지킬 조건에 걸린 나라와 이주 불가 국가는 순위에서 제외. 직접 입력한 답은 Claude가 해석하고, 사용할 수 없으면 키워드로 해석.</p></div>
 <div class="cat"><h4>세금</h4><p>개인소득세 최고 한계세율, 위키백과 국가별 세율표 기준. 나라에 따라 지방세나 사회보험료 포함. 수정: 한국 49.5%(지방소득세 포함), 스위스 약 45%(칸톤 합산), 루마니아 10%. 소득세가 없는 나라는 0%. 외국인 특례가 있으면 가산. 한국과의 조세조약은 PwC 자료 기준.</p></div>
@@ -1447,8 +1448,28 @@ const CR=[
 {k:'open',l:'외국인 수용도',s:c=>(c.open-1)/4,t:c=>['배타적','다소 배타적','보통','개방적','매우 개방적'][c.open-1]},
 {k:'visa',l:'한국인 진입 쉬움',s:c=>(c.ve-1)/4,t:c=>['매우 어려움','어려움','보통','쉬움','매우 쉬움'][c.ve-1]},
 {k:'tax',l:'세금 부담',s:c=>c.tax==null?.4:Math.min(1,clamp(1-c.tax/55,0,1)+(c.spec?.15:0)),t:c=>c.tax==null?'세율 확인 필요':`최고 ${c.tax}%${c.spec?', 외국인 특례 있음':''}`},
-{k:'br',l:'미국행 다리 가치',s:c=>(c.br-1)/4,t:c=>['거의 없음','약함','보통','강함','매우 강함'][c.br-1]}];
+{k:'br',get l(){return brL()},s:c=>brS(c),t:c=>brT(c)}];
 const CL=Object.fromEntries(CR.map(k=>[k.k,k]));
+/* bridge value toward the chosen final destination */
+const LV5=['거의 없음','약함','보통','강함','매우 강함'];
+const EUM=new Set('AT BE BG HR CY CZ EE FI FR DE GR HU IT LV LT LU MT NL PL PT RO SK SI ES SE'.split(' '));
+const EEA=new Set([...EUM,'DK','IE','IS','LI','NO','CH']);
+const MERC=new Set('AR BR PY UY BO CL CO EC PE'.split(' '));
+function link(c,T){if(!T||c.c===T)return [0,'',''];
+if(EUM.has(c.c)&&EUM.has(T))return [1,'EU 블루카드 이동','EU 블루카드로 12개월 일하면 다른 회원국으로 옮기는 절차가 간단함(덴마크, 아일랜드 제외)'];
+if(EEA.has(c.c)&&EEA.has(T))return [.6,'시민권 후 유럽 자유 이주','이 나라 시민권을 얻으면 EU와 EFTA 안에서 자유롭게 이주할 수 있음'];
+if(c.c==='AU'&&T==='NZ')return [1,'호주 영주권으로 뉴질랜드 거주','호주 영주권자는 뉴질랜드 입국 때 거주 비자를 받을 수 있음'];
+if(c.c==='NZ'&&T==='AU')return [.6,'시민권 후 호주 거주','뉴질랜드 시민권을 얻으면 호주에서 바로 살고 일할 수 있음'];
+if((c.c==='GB'&&T==='IE')||(c.c==='IE'&&T==='GB'))return [.6,'시민권 후 공동여행구역','시민권을 얻으면 공동여행구역 협정으로 영국과 아일랜드를 자유롭게 오가며 살 수 있음'];
+if(MERC.has(c.c)&&MERC.has(T))return [.5,'시민권 후 메르코수르 거주','이 나라 시민권을 얻으면 메르코수르 거주협정으로 다른 회원국 거주가 쉬움'];
+return [0,'','']}
+const DEST=()=>st.cfg.dest||null;
+const roP=n=>{const k=n.charCodeAt(n.length-1)-0xAC00;return k<0||k>11171?'로':(k%28===0||k%28===8)?'로':'으로'};
+function brS(c){const T=DEST();if(T==='US')return (c.br-1)/4;
+const car=(c.job-1)/4*.6+CL.inn.s(c)*.4,ve=(c.ve-1)/4,t=T&&BY[T];if(!t)return car*.6+ve*.4;
+return clamp(link(c,T)[0]*.45+car*.3+(c.r===t.r?.1:0)+ve*.15,0,1)}
+function brT(c){const T=DEST();if(T==='US')return LV5[c.br-1];const v=brS(c),l=link(c,T)[1];return LV5[Math.min(4,Math.floor(v*5))]+(l?', '+l:'')}
+function brL(){const T=DEST();return T&&BY[T]?`${BY[T].n}행 다리 가치`:'다리 가치(경력, 진입)'}
 const RU=[
 {k:'isl',l:'섬나라 제외',d:'일본, 영국, 호주처럼 섬으로 된 나라를 뺍니다',f:c=>c.isl,y:'섬나라'},
 {k:'crime',l:'치안이 매우 나쁜 곳 제외',d:'살인과 강력범죄가 일상적인 곳',f:c=>c.safe<=1,y:'치안 매우 나쁨'},
@@ -1470,8 +1491,10 @@ const QS=[
 {id:'tax',t:'세금 부담이 얼마나 중요한가요?',h:'개인소득세 최고세율과 외국인 특례.',ph:'예: 소득세가 없거나 낮은 나라면 좋겠어요',o:W3('tax')},
 {id:'isl',t:'섬나라도 괜찮나요?',h:'일본, 영국, 호주, 싱가포르 등.',ph:'예: 대륙에 붙어 있어야 이동이 편할 것 같아요',o:[{l:'대륙에 붙은 나라만 볼게요',p:s=>{s.r.isl=1}},{l:'상관없어요',p:s=>{s.r.isl=0}}]},
 {id:'ex',t:'아예 빼고 싶은 지역이나 나라가 있나요?',h:'여러 개 선택 가능. 특정 나라는 이름을 입력.',ph:'예: 캐나다, 중국은 빼 주세요',multi:1,o:EXR.map(([k,l])=>({l,k}))}];
-const NQ=QS.length;
-const BASE=()=>({mode:'final',w:{job:2,pow:1,inn:2,war:2,safe:2,demo:1,open:2,visa:1,tax:1,br:0},r:{isl:0,crime:1,war:1,big:0},ex:{regs:[],cs:[]}});
+QS.splice(1,0,{id:'dest',when:cfg=>cfg.mode==='bridge',t:'최종 정착지는 어디인가요?',h:'목록에 없으면 아래에 나라 이름을 적어 주세요.',ph:'예: 네덜란드',o:[...['US','CA','AU','GB','DE','JP','SG'].map(k=>({l:BY[k].n,p:s=>{s.dest=k}})),{l:'아직 정하지 않았어요',p:s=>{s.dest=null}}]});
+const VQ=()=>{build();return QS.filter(q=>!q.when||q.when(st.cfg))};
+const cur=()=>{const v=VQ();st.step=clamp(st.step,0,v.length-1);return v[st.step]};
+const BASE=()=>({mode:'final',dest:null,w:{job:2,pow:1,inn:2,war:2,safe:2,demo:1,open:2,visa:1,tax:1,br:0},r:{isl:0,crime:1,war:1,big:0},ex:{regs:[],cs:[]}});
 const copy=o=>JSON.parse(JSON.stringify(o));
 let st={ans:{},notes:{},step:0,done:false,ai:null,cfg:BASE(),tuned:null};
 /* every visit starts from question 1; nothing is kept between visits */
@@ -1482,7 +1505,8 @@ const save=()=>{};
 const lvl=t=>/상관\s*없|무관|신경\s*안|안\s*중요|필요\s*없|괜찮/.test(t)?0:/매우|가장|꼭|무조건|반드시|최우선|제일|아주|절대/.test(t)?3:/조금|약간|어느\s*정도|살짝/.test(t)?1:/중요|중시|좋|원해|원함|필요|싫/.test(t)?2:null;
 const findC=t=>{const T=t.toLowerCase();return D.filter(c=>T.includes(c.n)||T.includes(c.en.toLowerCase())).map(c=>c.c)};
 function local(cfg,id,t){if(!t)return;const v=lvl(t);
-if(id==='goal'){if(/다리|경유|거쳐|중간|발판|징검|전에/.test(t))cfg.mode='bridge';else if(/정착|최종|평생|오래/.test(t))cfg.mode='final'}
+if(id==='goal'){if(/다리|경유|거쳐|중간|발판|징검|전에/.test(t)){cfg.mode='bridge';const cs=findC(t).filter(x=>x!=='KR');if(cs.length)cfg.dest=cs[0]}else if(/정착|최종|평생|오래/.test(t))cfg.mode='final'}
+else if(id==='dest'){const cs=findC(t).filter(x=>x!=='KR');if(cs.length)cfg.dest=cs[0];else if(/모르|미정|아직|안\s*정/.test(t))cfg.dest=null}
 else if(id==='pow'){if(/강대국\s*(만|이어야|아니면)|1\s*,?\s*2위|초강대국/.test(t)){cfg.r.big=1;cfg.w.pow=3}else if(v!==null)cfg.w.pow=v}
 else if(id==='war'){if(/빼|제외|무조건|절대|미사일|공격/.test(t))cfg.r.war=1;if(v!==null)cfg.w.war=Math.max(v,cfg.r.war?2:0)}
 else if(id==='safe'){if(/빼|제외|절대|위험한|혼자/.test(t))cfg.r.crime=1;if(v!==null)cfg.w.safe=v;else if(/혼자|밤/.test(t))cfg.w.safe=3}
@@ -1492,16 +1516,16 @@ else if(id==='tax'){if(/없|낮|0%|면세|비과세/.test(t)&&v===null)cfg.w.tax
 else if(v!==null)cfg.w[id]=v}
 
 function build(){const cfg=BASE();
-for(const q of QS){const a=st.ans[q.id];if(q.multi){if(Array.isArray(a))cfg.ex.regs=a.slice()}else if(a!==undefined&&q.o[a])q.o[a].p(cfg);local(cfg,q.id,(st.notes[q.id]||'').trim())}
-if(st.ai&&st.ai.patch){const p=st.ai.patch;if(p.mode==='final'||p.mode==='bridge')cfg.mode=p.mode;for(const k in (p.w||{}))if(k in cfg.w&&[0,1,2,3].includes(p.w[k]))cfg.w[k]=p.w[k];for(const k in (p.r||{}))if(k in cfg.r&&[0,1].includes(p.r[k]))cfg.r[k]=p.r[k];if(p.ex){for(const r of p.ex.regs||[])if(EXR.some(e=>e[0]===r)&&!cfg.ex.regs.includes(r))cfg.ex.regs.push(r);for(const c of p.ex.cs||[])if(BY[c]&&!cfg.ex.cs.includes(c))cfg.ex.cs.push(c)}}
-if(st.tuned){if(st.tuned.mode)cfg.mode=st.tuned.mode;Object.assign(cfg.w,st.tuned.w||{});Object.assign(cfg.r,st.tuned.r||{})}
+for(const q of QS){if(q.when&&!q.when(cfg))continue;const a=st.ans[q.id];if(q.multi){if(Array.isArray(a))cfg.ex.regs=a.slice()}else if(a!==undefined&&q.o[a])q.o[a].p(cfg);local(cfg,q.id,(st.notes[q.id]||'').trim())}
+if(st.ai&&st.ai.patch){const p=st.ai.patch;if(p.mode==='final'||p.mode==='bridge')cfg.mode=p.mode;if(typeof p.dest==='string'&&BY[p.dest]&&p.dest!=='KR')cfg.dest=p.dest;for(const k in (p.w||{}))if(k in cfg.w&&[0,1,2,3].includes(p.w[k]))cfg.w[k]=p.w[k];for(const k in (p.r||{}))if(k in cfg.r&&[0,1].includes(p.r[k]))cfg.r[k]=p.r[k];if(p.ex){for(const r of p.ex.regs||[])if(EXR.some(e=>e[0]===r)&&!cfg.ex.regs.includes(r))cfg.ex.regs.push(r);for(const c of p.ex.cs||[])if(BY[c]&&!cfg.ex.cs.includes(c))cfg.ex.cs.push(c)}}
+if(st.tuned){if(st.tuned.mode)cfg.mode=st.tuned.mode;if(st.tuned.dest!==undefined)cfg.dest=st.tuned.dest;Object.assign(cfg.w,st.tuned.w||{});Object.assign(cfg.r,st.tuned.r||{})}
 st.cfg=cfg}
 
 const eff=m=>{const w={...st.cfg.w};if(m==='bridge'){w.br=3;w.pow=0}else w.br=0;return w};
 const fit=(c,m)=>{const w=eff(m);let a=0,t=0;for(const k of CR){const x=w[k.k]||0;a+=x*k.s(c);t+=x}return t?Math.round(a/t*100):0};
 const fails=(c,m)=>{const r=st.cfg.r,x=st.cfg.ex,out=RU.filter(u=>r[u.k]&&!(u.only&&u.only!==m)&&u.f(c)).map(u=>u.y);
 if(x.regs.includes('weu')&&c.weu)out.push('서유럽');if(x.regs.includes(c.r))out.push('제외한 지역');if(BAN.has(c.c))out.unshift('이주 불가 국가');if(x.cs.includes(c.c))out.push('직접 제외한 나라');return out};
-const rank=m=>D.filter(c=>!c.base&&!(m==='bridge'&&c.c==='US')).map(c=>({c,s:fit(c,m),f:fails(c,m)})).sort((a,b)=>b.s-a.s);
+const rank=m=>D.filter(c=>!c.base&&!(m==='bridge'&&c.c===st.cfg.dest)).map(c=>({c,s:fit(c,m),f:fails(c,m)})).sort((a,b)=>b.s-a.s);
 const winner=m=>rank(m).find(x=>!x.f.length);
 
 const PF={
@@ -1525,15 +1549,18 @@ const genS={final:['현지 취업비자 요건과 스폰서가 가능한 기업 
 
 function explain(){const m=st.cfg.mode,R=rank(m),P=R.filter(x=>!x.f.length),el=$('#result');
 if(!P.length){el.innerHTML=`<h3>조건을 모두 통과한 나라가 없습니다</h3><p style="margin-top:8px">기준 세부 조정에서 조건을 하나 해제해 보세요.</p>`;return}
-const t=P[0],c=t.c,tx=(m==='final'?PF:PB)[c.c]||autoTxt(c,m),steps=tx.s||genS[m],w=eff(m);
+const T=st.cfg.dest&&BY[st.cfg.dest],t=P[0],c=t.c,tx=(m==='final'?PF:(T&&T.c==='US'?PB:{}))[c.c]||autoTxt(c,m),w=eff(m);
+const steps=tx.s||(m==='final'?genS.final:T&&T.c==='US'?genS.bridge:T?[`${T.n}에 법인이 있는 다국적 기업이나 한국 기업의 ${c.n} 법인부터 지원 목록을 만든다`,`1~2년 근무 뒤 ${T.n} 법인으로 옮긴 사례가 있는지 인사팀에 확인한다`,`${T.n}의 취업비자와 영주권 요건을 미리 확인한다`]:['최종 정착지 후보를 2~3개로 좁힌다','후보 나라들에 법인이 있는 다국적 기업부터 지원 목록을 만든다','현지 경력 1~2년 뒤 옮겨 갈 비자 경로를 미리 확인한다']);
 const runners=P.slice(1,3).map(x=>{const up=[],dn=[];for(const k of CR){if(!w[k.k])continue;const d=k.s(x.c)-k.s(c);if(d>=.2)up.push(k.l);else if(d<=-.2)dn.push(k.l)}
 return `<div class="out"><span><b>${esc(x.c.n)}</b></span><span class="num">${x.s}</span><span>${up.length?esc(up.slice(0,2).join(', '))+'에서는 앞서지만 ':''}${dn.length?esc(dn.slice(0,2).join(', '))+'에서 밀립니다.':'차이가 크지 않습니다.'}</span></div>`}).join('');
 const outs=R.filter(x=>x.f.length&&x.s>=t.s-12).slice(0,5).map(x=>`<div class="out"><span><b>${esc(x.c.n)}</b></span><span class="num">${x.s}</span><span>${esc(x.f.join(', '))}</span></div>`).join('');
 let extra='';
-if(m==='bridge')extra+=`<p class="note">참고: E-2와 L-1은 한국 본사 근무 경력으로도 신청 가능. 한국 기업의 미국 법인으로 바로 가는 경로가 더 빠를 수 있음.</p>`;
+if(m==='bridge'&&T&&T.c!=='US'&&link(c,T.c)[2])extra+=`<p class="note">${esc(c.n)}에서 ${esc(T.n)}${roP(T.n)}: ${esc(link(c,T.c)[2])}</p>`;
+if(m==='bridge'&&!T)extra+=`<p class="note">최종 정착지를 정하지 않아 일자리, 혁신, 진입 쉬움으로만 계산했습니다. 기준 세부 조정에서 최종 정착지를 고르면 그 나라 기준으로 다시 계산합니다.</p>`;
+if(m==='bridge'&&T&&T.c==='US')extra+=`<p class="note">참고: E-2와 L-1은 한국 본사 근무 경력으로도 신청 가능. 한국 기업의 미국 법인으로 바로 가는 경로가 더 빠를 수 있음.</p>`;
 if(m==='final'&&st.cfg.r.big){const sv=st.cfg.r.big;st.cfg.r.big=0;const alt=rank('final').filter(x=>!x.f.length&&x.c.c!==c.c)[0];st.cfg.r.big=sv;if(alt)extra+=`<p class="note">강대국 조건 해제 시 2위: <b>${esc(alt.c.n)}</b> (${alt.s}점)</p>`}
 const rows=CR.filter(k=>w[k.k]>0).map(k=>`<tr><td>${esc(k.l)}</td><td>${esc(k.t(c))}<div class="mbar"><i style="width:${Math.round(k.s(c)*100)}%"></i></div></td><td class="num">${['','조금','보통','매우'][w[k.k]]}</td></tr>`).join('');
-el.innerHTML=`<div class="ticket"><div class="tl"><p class="kick">${ML[m]} 추천 1위</p><h3>${flag(c,48)}${esc(c.n)}</h3><p class="sub">${esc(c.en)}, ${esc(c.r)}, ${esc(c.gov)}</p></div><div class="tr"><div class="score">${t.s}<small>100점 만점 적합도</small></div><div class="stamp">${esc(c.c)} 행</div></div></div>
+el.innerHTML=`<div class="ticket"><div class="tl"><p class="kick">${m==="bridge"&&T?esc(T.n)+roP(T.n)+" 가기 전 거쳐 갈 나라 1위":ML[m]+" 추천 1위"}</p><h3>${flag(c,48)}${esc(c.n)}</h3><p class="sub">${esc(c.en)}, ${esc(c.r)}, ${esc(c.gov)}</p></div><div class="tr"><div class="score">${t.s}<small>100점 만점 적합도</small></div><div class="stamp">${esc(c.c)} 행</div></div></div>
 <div class="vrow"><div class="why"><h4>추천 이유</h4><p>${esc(tx.f)}</p><p>${esc(tx.w)}</p></div>
 <div><h4>인구 피라미드</h4>${pyrSVG(c,190,170,1)}<p class="small" style="margin-top:6px">${esc(pyr(c))}, 근로연령 ${wa(c)}%</p></div></div>
 <h4>기준별 점수</h4><div class="scroll"><table><thead><tr><th>기준</th><th>${esc(c.n)}</th><th class="num">중요도</th></tr></thead><tbody>${rows}</tbody></table></div>
@@ -1543,40 +1570,41 @@ ${outs?`<h4>조건에 걸려 제외된 나라</h4><div class="outs">${outs}</div
 <p style="margin-top:14px"><button type="button" class="ghost" data-open="${esc(c.c)}">${esc(c.n)} 상세 카드 열기</button></p>`}
 
 /* onboarding */
-function showQ(){const q=QS[st.step],a=st.ans[q.id];
-$('#pNum').textContent=`질문 ${st.step+1} / ${NQ}`;$('#route').innerHTML=QS.map((_,i)=>`<i class="${i<st.step?'done':i===st.step?'now':''}"></i>`).join('');const qw=$('#qwrap');if(showQ.last!==st.step){qw.classList.remove('swap');void qw.offsetWidth;qw.classList.add('swap');showQ.last=st.step}
+function showQ(){const q=cur(),a=st.ans[q.id],NQ=VQ().length;
+$('#pNum').textContent=`질문 ${st.step+1} / ${NQ}`;$('#route').innerHTML=VQ().map((_,i)=>`<i class="${i<st.step?'done':i===st.step?'now':''}"></i>`).join('');const qw=$('#qwrap');if(showQ.last!==st.step){qw.classList.remove('swap');void qw.offsetWidth;qw.classList.add('swap');showQ.last=st.step}
 $('#qT').textContent=q.t;$('#qH').textContent=q.h;
 $('#opts').innerHTML=q.o.map((o,i)=>{const on=q.multi?(Array.isArray(a)&&a.includes(o.k)):a===i;return `<button type="button" class="opt" data-i="${i}" aria-pressed="${on}"><kbd>${i+1}</kbd><span>${esc(o.l)}</span></button>`}).join('');
 const n=$('#note');n.value=st.notes[q.id]||'';n.placeholder=q.ph;
 $('#prev').disabled=st.step===0;$('#next').textContent=st.step===NQ-1?'결과 보기':'다음'}
-function pick(i){const q=QS[st.step];if(q.multi){const a=Array.isArray(st.ans[q.id])?st.ans[q.id]:[];const k=q.o[i].k;st.ans[q.id]=a.includes(k)?a.filter(x=>x!==k):[...a,k];showQ()}else{st.ans[q.id]=i;showQ();save();live();setTimeout(()=>{if(QS[st.step]===q&&!($('#note').value.trim()))go(1)},260)}save();live()}
-function go(d){st.notes[QS[st.step].id]=$('#note').value.trim();if(d>0&&st.step===NQ-1){finish();return}st.step=clamp(st.step+d,0,NQ-1);save();showQ();live()}
+function pick(i){const q=cur();if(q.multi){const a=Array.isArray(st.ans[q.id])?st.ans[q.id]:[];const k=q.o[i].k;st.ans[q.id]=a.includes(k)?a.filter(x=>x!==k):[...a,k];showQ()}else{st.ans[q.id]=i;showQ();save();live();setTimeout(()=>{if(cur()===q&&!($('#note').value.trim()))go(1)},260)}save();live()}
+function go(d){st.notes[cur().id]=$('#note').value.trim();const NQ=VQ().length;if(d>0&&st.step===NQ-1){finish();return}st.step=clamp(st.step+d,0,NQ-1);save();showQ();live()}
 let sampleFn=null;
 (async()=>{try{if(window.claude&&window.claude.use)sampleFn=await window.claude.use('sample')}catch(e){sampleFn=null}})();
 async function finish(){st.done=true;st.tuned=null;save();build();render();$('#res').scrollIntoView({block:'start'});
-const notes=QS.filter(q=>(st.notes[q.id]||'').trim());if(!notes.length){st.ai=null;save();aiNote();return}
+const notes=VQ().filter(q=>(st.notes[q.id]||'').trim());if(!notes.length){st.ai=null;save();aiNote();return}
 if(!sampleFn){st.ai=null;save();aiNote();return}
 const nt=$('#aiNote');nt.hidden=false;nt.textContent='직접 입력을 해석하는 중';
 const prompt=`이민 국가 추천 사이트의 설문 답변을 점수 설정으로 바꿔 주세요. JSON만 답하세요.
-설정 키: mode("final"|"bridge"), w(각 0~3 정수: job 일자리, pow 국력, inn 혁신, war 전쟁 안전, safe 치안, demo 인구구조, open 외국인 수용, visa 진입 쉬움, tax 세금 부담이 낮은 것), r(각 0|1: isl 섬나라 제외, crime 치안 매우 나쁜 곳 제외, war 전쟁 영향권 제외, big 강대국만), ex{regs:[${EXR.map(e=>'"'+e[0]+'"').join(',')} 중에서], cs:[국가 코드]}, summary(한국어 한두 문장, 직접 적은 답을 어떻게 반영했는지).
+설정 키: mode("final"|"bridge"), dest(거쳐 갈 나라를 찾을 때 최종 정착지 국가 코드), w(각 0~3 정수: job 일자리, pow 국력, inn 혁신, war 전쟁 안전, safe 치안, demo 인구구조, open 외국인 수용, visa 진입 쉬움, tax 세금 부담이 낮은 것), r(각 0|1: isl 섬나라 제외, crime 치안 매우 나쁜 곳 제외, war 전쟁 영향권 제외, big 강대국만), ex{regs:[${EXR.map(e=>'"'+e[0]+'"').join(',')} 중에서], cs:[국가 코드]}, summary(한국어 한두 문장, 직접 적은 답을 어떻게 반영했는지).
 직접 적은 답에서 드러난 것만 넣고 나머지 키는 빼세요.
 국가 코드: ${D.map(c=>c.c+'='+c.n).join(', ')}
 답변:
-${QS.map(q=>{const a=st.ans[q.id];const ch=q.multi?(Array.isArray(a)?a.map(k=>EXR.find(e=>e[0]===k)[1]).join(', '):''):(a!==undefined?q.o[a].l:'');return `- ${q.t} / 고른 보기: ${ch||'없음'} / 직접 적은 답: ${st.notes[q.id]||'없음'}`}).join('\n')}
+${VQ().map(q=>{const a=st.ans[q.id];const ch=q.multi?(Array.isArray(a)?a.map(k=>EXR.find(e=>e[0]===k)[1]).join(', '):''):(a!==undefined?q.o[a].l:'');return `- ${q.t} / 고른 보기: ${ch||'없음'} / 직접 적은 답: ${st.notes[q.id]||'없음'}`}).join('\n')}
 형식 예: {"w":{"safe":3},"r":{"crime":1},"ex":{"regs":[],"cs":["CA"]},"summary":"..."}`;
-try{const v=await sampleFn.json(prompt,{modelTier:'quick'});if(v&&typeof v==='object'){st.ai={patch:{mode:v.mode,w:v.w,r:v.r,ex:v.ex},summary:typeof v.summary==='string'?v.summary.slice(0,300):'',by:'claude'};save();build();render()}}
+try{const v=await sampleFn.json(prompt,{modelTier:'quick'});if(v&&typeof v==='object'){st.ai={patch:{mode:v.mode,dest:v.dest,w:v.w,r:v.r,ex:v.ex},summary:typeof v.summary==='string'?v.summary.slice(0,300):'',by:'claude'};save();build();render()}}
 catch(e){st.ai=null}aiNote()}
-function aiNote(){const nt=$('#aiNote'),has=QS.some(q=>(st.notes[q.id]||'').trim());
+function aiNote(){const nt=$('#aiNote'),has=VQ().some(q=>(st.notes[q.id]||'').trim());
 if(!has){nt.hidden=true;return}nt.hidden=false;
 nt.textContent=st.ai&&st.ai.by==='claude'?`직접 입력 해석: ${st.ai.summary||'기준에 반영함'}`:'직접 입력은 키워드로 해석함'}
 
-function summary(){const c=st.cfg,w=c.w,L=['상관없음','조금','보통','매우'],out=[`<span>${ML[c.mode]}</span>`];
+function summary(){const c=st.cfg,w=c.w,L=['상관없음','조금','보통','매우'],out=[`<span>${ML[c.mode]}</span>`];if(c.mode==='bridge')out.push(`<span>최종 정착지 ${esc(c.dest&&BY[c.dest]?BY[c.dest].n:'미정')}</span>`);
 for(const k of ['job','pow','inn','war','safe','demo','open','visa','tax'])if(w[k]>0&&!(c.mode==='bridge'&&k==='pow'))out.push(`<span>${CL[k].l} ${L[w[k]]}</span>`);
 for(const u of RU)if(c.r[u.k]&&!(u.only&&u.only!==c.mode))out.push(`<span class="ex">${u.l}</span>`);
 const ex=[...c.ex.regs.map(r=>EXR.find(e=>e[0]===r)[1]),...c.ex.cs.map(x=>BY[x].n)];if(ex.length)out.push(`<span class="ex">제외: ${esc(ex.join(', '))}</span>`);
 $('#sum').innerHTML=out.join('')}
 
 function tuneUI(){const c=st.cfg,m=c.mode;$('#mFinal').setAttribute('aria-pressed',m==='final');$('#mBridge').setAttribute('aria-pressed',m==='bridge');
+const dw=$('#destWrap');dw.hidden=m!=='bridge';if(m==='bridge')dw.innerHTML=`<label for="destSel"><b>최종 정착지</b></label> <select id="destSel"><option value="">정하지 않음</option>${D.filter(x=>!x.base).slice().sort((a,b)=>a.n.localeCompare(b.n,'ko')).map(x=>`<option value="${x.c}"${x.c===c.dest?' selected':''}>${esc(x.n)}</option>`).join('')}</select>`;
 $('#rules').innerHTML=RU.filter(u=>!u.only||u.only===m).map(u=>`<label class="rule"><input type="checkbox" id="r-${u.k}" data-r="${u.k}" ${c.r[u.k]?'checked':''}><span><b>${esc(u.l)}</b><br><span class="small">${esc(u.d)}</span></span></label>`).join('');
 $('#weights').innerHTML=CR.filter(k=>k.k!=='br'&&!(m==='bridge'&&k.k==='pow')).map(k=>`<div class="wt"><span>${esc(k.l)}</span><div class="lv" role="group" aria-label="${esc(k.l)} 중요도">${['무시','조금','보통','매우'].map((l,i)=>`<button type="button" data-w="${k.k}" data-v="${i}" aria-pressed="${c.w[k.k]===i}">${l}</button>`).join('')}</div></div>`).join('')}
 const tune=fn=>{st.tuned=st.tuned||{w:{},r:{}};fn(st.tuned);save();build();render()};
@@ -1654,7 +1682,7 @@ $('#dBody').innerHTML=`${spOf(c).length?`<div class="sbadge" style="margin-top:1
 <div class="cat"><h4>정치</h4><dl class="kv"><dt>정치 형태</dt><dd>${esc(c.gov)}</dd><dt>체제</dt><dd>${esc(c.reg)}</dd><dt>양극화</dt><dd>${dots(c.pol,'r')} ${['낮음','낮은 편','보통','높음','매우 높음'][c.pol-1]}${c.reg==='권위주의'?' (선거 경쟁 제한)':''}</dd></dl></div>
 <div class="cat"><h4>경제, 일자리, 혁신</h4><dl class="kv"><dt>일자리, 사업</dt><dd>${dots(c.job,'g')} ${esc(CL.job.t(c))}</dd><dt>국력</dt><dd>${esc(CL.pow.t(c))}</dd><dt>혁신성</dt><dd>${esc(CL.inn.t(c))}</dd></dl></div>
 <div class="cat"><h4>안전</h4><dl class="kv"><dt>전쟁, 내전</dt><dd>${dots(c.war,'r')} ${esc(CL.war.t(c))}</dd><dt>치안</dt><dd>${dots(c.safe,'g')} ${esc(CL.safe.t(c))}</dd><dt>평화지수</dt><dd>${c.gpi?`163개국 중 ${c.gpi}위`:'지수 미포함'}</dd></dl></div>
-<div class="cat"><h4>외국인과 비자</h4><dl class="kv"><dt>외국인 수용</dt><dd>${dots(c.open,'g')} ${esc(CL.open.t(c))}</dd><dt>진입 난이도</dt><dd>${esc(CL.visa.t(c))}</dd><dt>경로</dt><dd>${esc(c.visa)}</dd><dt>미국행 다리</dt><dd>${esc(CL.br.t(c))}</dd></dl></div>
+<div class="cat"><h4>외국인과 비자</h4><dl class="kv"><dt>외국인 수용</dt><dd>${dots(c.open,'g')} ${esc(CL.open.t(c))}</dd><dt>진입 난이도</dt><dd>${esc(CL.visa.t(c))}</dd><dt>경로</dt><dd>${esc(c.visa)}</dd><dt>미국행 다리</dt><dd>${esc(LV5[c.br-1])}</dd></dl></div>
 <div class="cat"><h4>세금</h4><dl class="kv"><dt>소득세 최고</dt><dd>${c.tax==null?'확인 필요':c.tax+'%'}</dd><dt>외국인 특례</dt><dd>${esc(c.taxN||'특별한 제도 없음')}</dd><dt>한국과 조세조약</dt><dd>${c.dta===1?'있음(이중과세 방지)':c.dta===0?'없음':'해당 없음'}</dd></dl></div>
 <div class="cat"><h4>장점</h4><ul class="list">${c.pro.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
 <div class="cat"><h4>단점</h4><ul class="list">${c.con.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
@@ -1705,13 +1733,14 @@ const tpb=e.target.closest('[data-tp]');if(tpb){tp=+tpb.dataset.tp;table();$('#l
 const rg=e.target.closest('[data-g]');if(rg){reg=rg.dataset.g;tp=0;cshow=12;regChips();table();cards();return}
 const th=e.target.closest('th[data-s]');if(th){const k=th.dataset.s;tp=0;cshow=12;sort=sort.k===k?{k,d:-sort.d}:{k,d:['n','r','gov','gii','gpi','war','pol','tax'].includes(k)?1:-1};table()}});
 document.addEventListener('keydown',e=>{const t=e.target;
-if(!$('#ob').hidden&&!t.matches('textarea,input')&&/^[1-9]$/.test(e.key)){const i=+e.key-1;if(QS[st.step].o[i]){e.preventDefault();pick(i)}return}
+if(!$('#ob').hidden&&!t.matches('textarea,input')&&/^[1-9]$/.test(e.key)){const i=+e.key-1;if(cur().o[i]){e.preventDefault();pick(i)}return}
 if(e.key!=='Enter'&&e.key!==' ')return;if(t.matches('tr[data-open]')){e.preventDefault();openC(t.dataset.open)}else if(t.matches('th[data-s]')){e.preventDefault();t.click()}});
 document.addEventListener('change',e=>{const r=e.target.dataset&&e.target.dataset.r;if(r)tune(t=>{t.r[r]=e.target.checked?1:0})});
-$('#note').addEventListener('input',e=>{st.notes[QS[st.step].id]=e.target.value;save();live()});
+$('#note').addEventListener('input',e=>{st.notes[cur().id]=e.target.value;save();live()});
 $('#next').onclick=()=>go(1);$('#prev').onclick=()=>go(-1);
-$('#skip').onclick=()=>{st.notes[QS[st.step].id]=$('#note').value.trim();finish()};
+$('#skip').onclick=()=>{st.notes[cur().id]=$('#note').value.trim();finish()};
 $('#redo').onclick=()=>{st.done=false;st.step=0;st.tuned=null;save();render();showQ();$('#start').scrollIntoView({block:'start'})};
+$('#destWrap').addEventListener('change',e=>{if(e.target.id==='destSel'){const v=e.target.value||null;tune(t=>{t.dest=v})}});
 $('#mFinal').onclick=()=>tune(t=>{t.mode='final'});$('#mBridge').onclick=()=>tune(t=>{t.mode='bridge'});
 $('#dClose').onclick=()=>$('#dlg').close?$('#dlg').close():$('#dlg').removeAttribute('open');
 $('#dlg').addEventListener('click',e=>{if(e.target===$('#dlg'))$('#dlg').close()});
