@@ -1472,8 +1472,9 @@ const NQ=QS.length;
 const BASE=()=>({mode:'final',w:{job:2,pow:1,inn:2,war:2,safe:2,demo:1,open:2,visa:1,tax:1,br:0},r:{isl:0,crime:1,war:1,big:0},ex:{regs:[],cs:[]}});
 const copy=o=>JSON.parse(JSON.stringify(o));
 let st={ans:{},notes:{},step:0,done:false,ai:null,cfg:BASE(),tuned:null};
-try{const s=JSON.parse(localStorage.getItem('imm-compass')||'null');if(s&&s.ans){st.ans=s.ans;st.notes=s.notes||{};st.done=!!s.done;st.ai=s.ai||null;st.tuned=s.tuned||null}}catch(e){}
-const save=()=>{try{localStorage.setItem('imm-compass',JSON.stringify({ans:st.ans,notes:st.notes,done:st.done,ai:st.ai,tuned:st.tuned}))}catch(e){}};
+/* every visit starts from question 1; nothing is kept between visits */
+try{localStorage.removeItem('imm-compass')}catch(e){}
+const save=()=>{};
 
 /* free-text reading without Claude */
 const lvl=t=>/상관\s*없|무관|신경\s*안|안\s*중요|필요\s*없|괜찮/.test(t)?0:/매우|가장|꼭|무조건|반드시|최우선|제일|아주|절대/.test(t)?3:/조금|약간|어느\s*정도|살짝/.test(t)?1:/중요|중시|좋|원해|원함|필요|싫/.test(t)?2:null;
