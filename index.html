@@ -42,7 +42,7 @@ a{color:inherit}
 .nav a:hover{color:var(--ink)}
 .lede{color:var(--mute);font-size:17px;max-width:46em;margin-top:12px}
 .sea{background:var(--sea)}
-.start{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;margin-top:24px;align-items:start}
+.start{display:grid;grid-template-columns:minmax(0,740px);gap:24px;margin-top:24px;align-items:start}
 .panel{background:var(--panel);border:1px solid var(--rule);padding:22px}
 .prog{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--mute)}
 .bar{flex:1;height:6px;background:var(--chip)}
@@ -322,11 +322,6 @@ main>section{min-height:calc(100dvh - 160px)}
 <div id="result" aria-live="polite" style="margin-top:22px"></div>
 </div>
 </div>
-<aside class="panel">
-<h3 style="font-size:16px">현재 순위</h3>
-<p class="small" style="margin:4px 0 12px" id="boardSub">적합도 상위 10개국</p>
-<div class="board" id="board"></div>
-</aside>
 </div>
 </div></section>
 
@@ -1585,7 +1580,7 @@ const tune=fn=>{st.tuned=st.tuned||{w:{},r:{}};fn(st.tuned);save();build();rende
 
 function live(){build();board();table();cards();special();chart();stats()}
 function render(){$('#ob').hidden=st.done;$('#res').hidden=!st.done;if(st.done){summary();tuneUI();explain()}live()}
-function board(){const m=st.cfg.mode,R=rank(m).filter(x=>!x.f.length).slice(0,10),top=R[0]?R[0].s:1;
+function board(){if(!$('#board'))return;const m=st.cfg.mode,R=rank(m).filter(x=>!x.f.length).slice(0,10),top=R[0]?R[0].s:1;
 $('#boardSub').textContent=`${ML[m]} 기준, 적합도 상위 10개국 (100점 만점)`;
 $('#board').innerHTML=R.map((x,i)=>`<button type="button" class="brow${i?'':' first'}" data-open="${x.c.c}"><span class="rk">${i+1}</span><span>${flag(x.c,18)}${esc(x.c.n)}</span><span><i style="width:${Math.max(4,Math.round(x.s/Math.max(top,1)*100))}%"></i></span><b>${x.s}</b></button>`).join('')||'<p class="small">조건을 통과한 나라 없음</p>'}
 function stats(){const base=D.filter(c=>!c.base);$('#kAll').textContent=D.length;
