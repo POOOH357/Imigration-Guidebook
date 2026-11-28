@@ -286,8 +286,13 @@ main>section{min-height:calc(100dvh - 160px)}
 .stile .flag{display:inline-block}
 .card .pbadge{background:var(--soft)}
 .card,.legend,.spanel,.scroll.tblwrap{box-shadow:0 1px 2px #0f23300f,0 12px 32px -20px #0f233040;border:1px solid var(--rule)}
-.globe{position:absolute;right:max(12px,2vw);top:24px;width:min(680px,52vw);aspect-ratio:1/1;pointer-events:none;z-index:0}
-@media(max-width:900px){.globe{width:min(420px,68vw);right:2vw;top:-20px;opacity:.4}}
+.start{grid-template-columns:minmax(0,620px) minmax(0,1fr);gap:clamp(24px,3vw,48px)}
+.smain{grid-column:1;grid-row:1;min-width:0}
+.gbox{grid-column:2;grid-row:1;position:sticky;top:120px;align-self:start;display:flex;justify-content:center}
+.globe{display:block;width:100%;max-width:600px;aspect-ratio:1/1;pointer-events:none}
+@media(max-width:1000px){.start{grid-template-columns:minmax(0,1fr)}.gbox{grid-column:1;grid-row:1;position:static}.smain{grid-row:2}.globe{max-width:min(340px,78vw)}}
+@media(max-width:600px){.globe{max-width:min(250px,62vw)}.start{gap:16px}}
+
 .vlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.vlink{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;background:var(--chip);color:var(--ink);font-weight:700;font-size:14px;text-decoration:none}.vlink::after{content:'';width:8px;height:8px;margin-left:8px;border-top:2px solid currentColor;border-right:2px solid currentColor;transform:rotate(45deg) translate(-1px,1px)}.vlink:hover{background:color-mix(in srgb,var(--route) 14%,var(--chip))}
 .ntabs{display:flex;gap:6px;margin:8px 0 2px}.ntabs button{font:inherit;font-size:14px;font-weight:700;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--rule);background:transparent;color:var(--mute);cursor:pointer}.ntabs button[aria-selected=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .nlist{list-style:none;margin:6px 0 0;padding:0}.nlist li{padding:11px 0;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;gap:3px}.nlist a{color:var(--ink);font-weight:600;text-decoration:none;line-height:1.45}.nlist a:hover{text-decoration:underline}.nlist span{font-size:13px;color:var(--mute)}
@@ -311,11 +316,12 @@ main>section{min-height:calc(100dvh - 160px)}
 </div><div class="tick" id="tick" hidden><span class="tk-lab" id="tkLab">주가지수</span><div class="tk-view"><div class="tk-track" id="tkTrack"></div></div></div></header>
 
 <main>
-<section class="band sea" id="start"><canvas class="globe" id="globe" aria-hidden="true"></canvas><div class="wrap">
+<section class="band sea" id="start"><div class="wrap">
 <h1>이민 가이드북</h1>
 <p class="lede" style="color:var(--ink)">196개국 비교와 국가 추천. 질문에 답하면 조건에 맞는 나라가 나옵니다.</p>
 <div class="start">
-<div>
+<div class="gbox" aria-hidden="true"><canvas class="globe" id="globe"></canvas></div>
+<div class="smain">
 <div class="panel" id="ob">
 <div class="prog"><span id="pNum">질문 1 / 12</span><div class="route" id="route" aria-hidden="true"></div></div>
 <div class="qwrap" id="qwrap"><h2 class="q" id="qT">어떤 나라를 찾고 있나요?</h2>
