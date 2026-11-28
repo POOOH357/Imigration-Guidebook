@@ -18,7 +18,7 @@ permissions:
   pages: write
 
 concurrency:
-  group: site-data
+  group: markets
   cancel-in-progress: false
 
 jobs:

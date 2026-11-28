@@ -15,7 +15,7 @@ permissions:
   pages: write
 
 concurrency:
-  group: site-data
+  group: news
   cancel-in-progress: false
 
 jobs:
