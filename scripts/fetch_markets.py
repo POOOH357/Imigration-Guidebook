@@ -19,10 +19,10 @@ def chart(sym):
     url = ("https://query1.finance.yahoo.com/v8/finance/chart/" + urllib.parse.quote(sym)
            + "?range=5d&interval=1d")
     err = None
-    for attempt in range(3):
+    for attempt in range(2):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-            with urllib.request.urlopen(req, timeout=20) as r:
+            with urllib.request.urlopen(req, timeout=12) as r:
                 return json.load(r)["chart"]["result"][0]
         except Exception as e:
             err = e
@@ -30,7 +30,24 @@ def chart(sym):
     raise err
 
 
+def quote_yf(sym):
+    """Use the yfinance library when it is installed; it handles Yahoo's cookies."""
+    import yfinance as yf
+    h = yf.Ticker(sym).history(period="7d", interval="1d", auto_adjust=False)
+    closes = [float(x) for x in h["Close"].dropna().tolist()]
+    if len(closes) < 2:
+        raise ValueError("no price data")
+    price, prev = closes[-1], closes[-2]
+    t = h["Close"].dropna().index[-1].to_pydatetime().astimezone(timezone.utc)
+    return {"p": round(price, 2), "ch": round((price - prev) / prev * 100, 2),
+            "t": t.isoformat(timespec="minutes")}
+
+
 def quote(sym):
+    try:
+        return quote_yf(sym)
+    except ImportError:
+        pass
     res = chart(sym)
     meta = res.get("meta", {})
     closes = [x for x in (res.get("indicators", {}).get("quote", [{}])[0].get("close") or []) if x is not None]
